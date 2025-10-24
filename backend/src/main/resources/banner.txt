@@ -1,0 +1,17 @@
+${AnsiColor.CYAN}
+ _ __   ___  _ __ ___
+| '_ \ / _ \| '_ ` _ \
+| | | | (_) | | | | | |
+|_| |_|\___/|_| |_| |_|
+${AnsiColor.DEFAULT}
+${AnsiColor.BRIGHT_RED}nom ${AnsiColor.BRIGHT_GREEN}nom ${AnsiColor.BRIGHT_BLUE}nom ${AnsiColor.BRIGHT_YELLOW}nom
+
+${AnsiColor.YELLOW}Developed by:
+  ${AnsiColor.BRIGHT_RED}Ábrahám Bálint
+  ${AnsiColor.BRIGHT_GREEN}Szanyi Ádám
+  ${AnsiColor.BRIGHT_BLUE}Takács Balázs
+  ${AnsiColor.BRIGHT_YELLOW}Bogár Dániel
+
+Powered by Spring Boot (v${spring-boot.version})
+
+${AnsiColor.DEFAULT}
