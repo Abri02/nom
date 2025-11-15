@@ -4,13 +4,15 @@ import domain.entities.User
 import com.nom.api.domain.ports.`in`.CreateUserRequest
 import com.nom.api.domain.ports.`in`.CreateUserUseCase
 import com.nom.api.domain.ports.out.UserRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
 class CreateUserUseCaseImpl(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) : CreateUserUseCase {
 
     override suspend fun execute(request: CreateUserRequest): User {
@@ -36,7 +38,6 @@ class CreateUserUseCaseImpl(
 
     private fun hashPassword(password: String): String {
         require(password.length >= 8) { "Password must be at least 8 characters long" }
-        // TODO: Replace with actual password hashing
-        return "hashed_$password"
+        return passwordEncoder.encode(password)
     }
 }
