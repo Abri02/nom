@@ -12,9 +12,11 @@
   "dependencies": {
     "@chakra-ui/react": "^3.29.0",
     "@emotion/react": "^11.14.0",
+    "lucide-react": "^0.553.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-hook-form": "^7.66.0"
+    "react-hook-form": "^7.66.0",
+    "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
