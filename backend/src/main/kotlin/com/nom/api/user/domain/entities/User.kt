@@ -1,0 +1,29 @@
+package domain.entities
+
+import java.time.LocalDateTime
+
+data class User(
+    val id: String,
+    val name: String,
+    val email: String,
+    val passwordHash: String,
+    val phoneNumber: String,
+    val role: UserRole,
+
+
+    val createdAt: LocalDateTime = LocalDateTime.now()
+) {
+    init {
+        require(name.isNotBlank()) { "Name cannot be blank" }
+        require(email.contains("@")) { "Invalid email format" }
+        require(phoneNumber.isNotBlank()) { "Phone number cannot be blank" }
+
+    }
+}
+
+enum class UserRole {
+    CUSTOMER,
+    RESTAURANT,
+    COURIER,
+    ADMIN
+}
