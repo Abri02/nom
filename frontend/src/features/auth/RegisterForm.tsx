@@ -67,7 +67,8 @@ export function RegisterForm({ userType }: RegisterFormProps) {
   });
 
   return (
-    <Container maxW="sm" position="relative" zIndex={1}>
+    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.900">
+      <Container maxW="sm" position="relative" zIndex={1}>
       <VStack gap="2rem" align="stretch">
         
         <Box
@@ -313,5 +314,6 @@ export function RegisterForm({ userType }: RegisterFormProps) {
         </Box>
       </VStack>
     </Container>
+    </Box>
   );
 }
