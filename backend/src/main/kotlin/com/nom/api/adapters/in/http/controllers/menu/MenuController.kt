@@ -4,6 +4,7 @@ import com.nom.api.domain.menu.entities.Menu
 import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.menu.ports.`in`.*
+import kotlinx.coroutines.runBlocking
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -23,16 +24,16 @@ class MenuController(
     // --------- Restaurant profile ---------
 
     @GetMapping("/{restaurantId}/profile")
-    suspend fun getRestaurantProfile(
+    fun getRestaurantProfile(
         @PathVariable restaurantId: String
-    ): ResponseEntity<RestaurantProfileResponse> {
-        return try {
+    ): ResponseEntity<RestaurantProfileResponse> = runBlocking {
+        return@runBlocking try {
             println(">>> getRestaurantProfile called with restaurantId=$restaurantId")
 
             val profile = getRestaurantProfileUseCase.execute(restaurantId)
                 ?: run {
                     println(">>> profile not found, returning 404")
-                    return ResponseEntity.notFound().build()
+                    return@runBlocking ResponseEntity.notFound().build()
                 }
 
             println(">>> profile FOUND, returning 200")
@@ -44,11 +45,11 @@ class MenuController(
     }
 
     @PutMapping("/{restaurantId}/profile")
-    suspend fun updateRestaurantProfile(
+    fun updateRestaurantProfile(
         @PathVariable restaurantId: String,
         @RequestBody request: UpdateRestaurantProfileHttpRequest
-    ): ResponseEntity<RestaurantProfileResponse> {
-        return try {
+    ): ResponseEntity<RestaurantProfileResponse> = runBlocking {
+        return@runBlocking try {
             val useCaseRequest = UpdateRestaurantProfileRequest(
                 restaurantId = restaurantId,
                 restaurantName = request.restaurantName,
@@ -67,10 +68,10 @@ class MenuController(
     // --------- Menu ---------
 
     @GetMapping("/{restaurantId}/menu")
-    suspend fun getMenu(
+    fun getMenu(
         @PathVariable restaurantId: String
-    ): ResponseEntity<MenuResponse> {
-        return try {
+    ): ResponseEntity<MenuResponse> = runBlocking {
+        return@runBlocking try {
             val menu = getMenuUseCase.execute(restaurantId)
                 ?: Menu() // ha nincs menü, visszaadhatunk üreset
 
@@ -81,11 +82,11 @@ class MenuController(
     }
 
     @PostMapping("/{restaurantId}/menu/items")
-    suspend fun addMenuItem(
+    fun addMenuItem(
         @PathVariable restaurantId: String,
         @RequestBody request: CreateMenuItemHttpRequest
-    ): ResponseEntity<MenuItemResponse> {
-        return try {
+    ): ResponseEntity<MenuItemResponse> = runBlocking {
+        return@runBlocking try {
             val useCaseRequest = AddMenuItemRequest(
                 restaurantId = restaurantId,
                 name = request.name,
@@ -105,12 +106,12 @@ class MenuController(
     }
 
     @PutMapping("/{restaurantId}/menu/items/{menuItemId}")
-    suspend fun updateMenuItem(
+    fun updateMenuItem(
         @PathVariable restaurantId: String,
         @PathVariable menuItemId: String,
         @RequestBody request: UpdateMenuItemHttpRequest
-    ): ResponseEntity<MenuItemResponse> {
-        return try {
+    ): ResponseEntity<MenuItemResponse> = runBlocking {
+        return@runBlocking try {
             val useCaseRequest = UpdateMenuItemRequest(
                 restaurantId = restaurantId,
                 menuItemId = menuItemId,
@@ -131,11 +132,11 @@ class MenuController(
     }
 
     @DeleteMapping("/{restaurantId}/menu/items/{menuItemId}")
-    suspend fun deleteMenuItem(
+    fun deleteMenuItem(
         @PathVariable restaurantId: String,
         @PathVariable menuItemId: String
-    ): ResponseEntity<Void> {
-        return try {
+    ): ResponseEntity<Void> = runBlocking {
+        return@runBlocking try {
             val deleted = deleteMenuItemUseCase.execute(restaurantId, menuItemId)
             if (deleted) {
                 ResponseEntity.noContent().build()
