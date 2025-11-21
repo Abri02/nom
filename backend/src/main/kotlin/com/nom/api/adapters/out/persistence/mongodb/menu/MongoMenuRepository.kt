@@ -114,6 +114,10 @@ class MongoMenuRepository(
             .toList()
     }
 
+    override fun findByRestaurantId(restaurantId: String): Menu? {
+        TODO("Not yet implemented")
+    }
+
     // ---------- Mapping függvények ----------
 
     private fun restaurantProfileToDocument(profile: RestaurantProfile): Document =

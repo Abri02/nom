@@ -17,23 +17,23 @@ class MongoUserRepository(
     private val collection: MongoCollection<Document>
 ) : UserRepository {
 
-    override suspend fun save(user: User): User {
+    override fun save(user: User): User {
         val document = userToDocument(user)
         collection.insertOne(document)
         return user
     }
 
-    override suspend fun findById(id: String): User? {
+    override fun findById(id: String): User? {
         val document = collection.find(Filters.eq("_id", id)).firstOrNull()
         return document?.let { documentToUser(it) }
     }
 
-    override suspend fun findByEmail(email: String): User? {
+    override fun findByEmail(email: String): User? {
         val document = collection.find(Filters.eq("email", email)).firstOrNull()
         return document?.let { documentToUser(it) }
     }
 
-    override suspend fun findAll(): List<User> {
+    override fun findAll(): List<User> {
         return collection.find().toList().map { documentToUser(it) }
     }
 
@@ -47,6 +47,21 @@ class MongoUserRepository(
         val result = collection.deleteOne(Filters.eq("_id", id))
         return result.deletedCount > 0
     }
+
+    override suspend fun findAllRestaurants(cuisineType: String?): List<User> {
+        val filter = if (cuisineType != null) {
+            Filters.and(
+                Filters.eq("role", UserRole.RESTAURANT.name),
+                Filters.eq("cuisineType", cuisineType)
+            )
+        } else {
+            Filters.eq("role", UserRole.RESTAURANT.name)
+        }
+
+        return collection.find(filter).toList().map { documentToUser(it) }
+    }
+
+    
 
     // Mapping functions
 

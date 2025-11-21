@@ -9,6 +9,8 @@ data class User(
     val passwordHash: String,
     val phoneNumber: String,
     val role: UserRole,
+    val description: String? = null, //pl ahhoz hogy milyen konyha
+    val isSuspended: Boolean = false,
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {

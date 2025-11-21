@@ -33,6 +33,7 @@ class JwtAuthenticationFilter(
             if (jwt != null && jwtUtil.validateToken(jwt)) {
                 val email = jwtUtil.extractEmail(jwt)
 
+
                 if (email != null) {
                     val authentication = UsernamePasswordAuthenticationToken(
                         email,
