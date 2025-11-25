@@ -1,7 +1,12 @@
 import { Box, Container, Text, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { User, Store, Bike } from "lucide-react";
-import { purple, pink, yellow, lightPurple } from "../common/theme/colorScheme";
+import {
+  purple,
+  pink,
+  yellow,
+  lightPurple,
+} from "../../common/theme/colorScheme";
 
 export function RegisterTypeSelection() {
   const navigate = useNavigate();
