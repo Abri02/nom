@@ -24,5 +24,6 @@ enum class UserRole {
     CUSTOMER,
     RESTAURANT,
     COURIER,
-    ADMIN
+    ADMIN,
+    UNKNOWN;
 }

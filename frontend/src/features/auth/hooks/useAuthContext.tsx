@@ -1,0 +1,169 @@
+import { createContext, useState, useContext, useMemo, useEffect } from "react";
+import type { ReactNode } from "react";
+import type {
+  AuthContextType,
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  User,
+} from "../types/auth.types";
+import { useLoginMutation, useRegisterMutation } from "../api/useAuthMutations";
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  const loginMutation = useLoginMutation();
+  const registerMutation = useRegisterMutation();
+
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const userStr = localStorage.getItem("user");
+
+        if (token && userStr) {
+          const storedUser: User = JSON.parse(userStr);
+          setIsLoggedIn(true);
+          setUser(storedUser);
+        }
+      } catch (err) {
+        setIsLoggedIn(false);
+        console.error("Auth failed", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const register = async ({
+    name,
+    email,
+    password,
+    phoneNumber,
+    role,
+  }: RegisterRequest) => {
+    setError(null);
+
+    try {
+      const response = await registerMutation.mutateAsync({
+        email,
+        password,
+        phoneNumber,
+        role,
+        name,
+      });
+
+      if (!response.token || !response.email) {
+        throw new Error(response.message || "Registration failed");
+      }
+
+      const newUser: User = {
+        email: response.email,
+        role: role,
+      };
+
+      localStorage.setItem("authToken", response.token);
+      localStorage.setItem("user", JSON.stringify(newUser));
+
+      setUser(newUser);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Registration failed";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const login = async ({ email, password }: LoginRequest) => {
+    setError(null);
+
+    try {
+      const response: AuthResponse = await loginMutation.mutateAsync({
+        email,
+        password,
+      });
+
+      if (!response.token || !response.email) {
+        throw new Error(response.message || "Invalid credentials");
+      }
+
+      const loggedInUser: User = {
+        email: response.email,
+        role: response.role,
+      };
+
+      localStorage.setItem("authToken", response.token);
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+
+      setUser(loggedInUser);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Login failed";
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser(null);
+    setError(null);
+  };
+
+  const clearError = () => {
+    setError(null);
+  };
+
+  const value = useMemo<AuthContextType>(
+    () => ({
+      isAuthenticated: !!user,
+      isLoading:
+        isLoading || loginMutation.isPending || registerMutation.isPending,
+      user,
+      error:
+        error ||
+        loginMutation.error?.message ||
+        registerMutation.error?.message ||
+        null,
+      register,
+      login,
+      logout,
+      clearError,
+      isLoggedIn,
+    }),
+    [
+      user,
+      isLoading,
+      error,
+      loginMutation,
+      registerMutation,
+      login,
+      logout,
+      register,
+    ]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return context;
+};
