@@ -13,7 +13,7 @@ export function HomePage() {
 
   return (
     <Flex
-      minH="100vh"
+      flex="1"
       direction="column"
       align="center"
       justify="center"

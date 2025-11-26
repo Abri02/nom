@@ -1,0 +1,67 @@
+import { Box, Text, HStack, Badge } from "@chakra-ui/react";
+import type { MenuItem } from "../types/restaurant.types";
+import { purple, pink, yellow } from "../../common/theme/colorScheme";
+
+interface MenuItemCardProps {
+  readonly menuItem: MenuItem;
+}
+
+export function MenuItemCard({ menuItem }: MenuItemCardProps) {
+  return (
+    <Box
+      borderWidth="3px"
+      borderColor={pink}
+      borderRadius="xl"
+      overflow="hidden"
+      bg="white"
+      boxShadow="lg"
+      _hover={{
+        transform: "translateY(-6px)",
+        boxShadow: "xl",
+        borderColor: purple,
+        transition: "all 0.3s",
+      }}
+    >
+      <Box
+        h="180px"
+        bg="gray.300"
+        backgroundImage={menuItem.imageUrl}
+        backgroundSize="cover"
+        backgroundPosition="center"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        {!menuItem.imageUrl && (
+          <Text fontSize="4xl" color="gray.500">
+            🍽️
+          </Text>
+        )}
+      </Box>
+
+      <Box p={5}>
+        <Text fontSize="2xl" fontWeight="bold" color={purple} mb={2}>
+          {menuItem.name}
+        </Text>
+
+        <Text fontSize="md" color="gray.700" mb={4} minH="40px">
+          {menuItem.description || "No description available"}
+        </Text>
+
+        <Text fontSize="3xl" fontWeight="bold" color={yellow} mb={3}>
+          {menuItem.price} Ft
+        </Text>
+
+        {menuItem.allergens.length > 0 && (
+          <HStack gap={2} flexWrap="wrap">
+            {menuItem.allergens.map((allergen) => (
+              <Badge key={allergen} colorPalette="red" size="sm">
+                {allergen}
+              </Badge>
+            ))}
+          </HStack>
+        )}
+      </Box>
+    </Box>
+  );
+}

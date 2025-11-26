@@ -6,13 +6,16 @@ import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./features/auth/hooks/useAuthContext";
+import { RestaurantProvider } from "./features/restaurants/hooks/useRestaurantContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={defaultSystem}>
         <AuthProvider>
-          <App />
+          <RestaurantProvider>
+            <App />
+          </RestaurantProvider>
         </AuthProvider>
       </ChakraProvider>
     </QueryClientProvider>
