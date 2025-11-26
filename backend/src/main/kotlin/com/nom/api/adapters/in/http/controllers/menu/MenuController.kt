@@ -18,10 +18,26 @@ class MenuController(
     private val getMenuUseCase: GetMenuUseCase,
     private val addMenuItemUseCase: AddMenuItemUseCase,
     private val updateMenuItemUseCase: UpdateMenuItemUseCase,
-    private val deleteMenuItemUseCase: DeleteMenuItemUseCase
+    private val deleteMenuItemUseCase: DeleteMenuItemUseCase,
+    private val getAllRestaurantUseCase: GetAllRestaurantUseCase
 ) {
 
     // --------- Restaurant profile ---------
+
+    @GetMapping("/restaurants")
+    fun getAllRestaurants(
+    ): ResponseEntity<List<RestaurantProfileResponse>> = runBlocking {
+        return@runBlocking try {
+
+            val profile = getAllRestaurantUseCase.execute()
+
+            println(">>> profile FOUND, returning 200")
+            ResponseEntity.ok(profile.map { it.toResponse() })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
 
     @GetMapping("/{restaurantId}/profile")
     fun getRestaurantProfile(
