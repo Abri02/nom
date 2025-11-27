@@ -23,6 +23,7 @@ repositories {
 extra["springAiVersion"] = "1.0.3"
 
 dependencies {
+	implementation("com.stripe:stripe-java:24.0.0") // Stripe SDK for payment processing
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")

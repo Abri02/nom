@@ -37,6 +37,13 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/api/restaurants/**").permitAll()
+
+                    .requestMatchers("/api/cart/**").authenticated()
+                    .requestMatchers("/api/orders/**").authenticated()
+                    .requestMatchers("/api/courier/**").authenticated()
+                    .requestMatchers("/api/admin/**").authenticated()
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

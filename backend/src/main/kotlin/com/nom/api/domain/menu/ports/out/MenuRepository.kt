@@ -32,4 +32,6 @@ interface MenuRepository {
     ): Boolean
 
     suspend fun findAllRestaurants(): List<RestaurantProfile>
+
+    fun findByRestaurantId(restaurantId: String): Menu?
 }
