@@ -64,7 +64,6 @@ export function NomInputs({
       <Input
         type={type}
         placeholder={placeholder}
-        
         value={value}
         onChange={onChange}
         color={scheme.iconColor}
@@ -72,7 +71,9 @@ export function NomInputs({
         borderColor={isInvalid ? "red.500" : scheme.focusBorderColor}
         _focus={{
           borderColor: isInvalid ? "red.500" : scheme.focusBorderColor,
-          boxShadow: isInvalid ? "0 0 0 3px rgba(245, 101, 101, 0.1)" : scheme.focusShadow,
+          boxShadow: isInvalid
+            ? "0 0 0 3px rgba(245, 101, 101, 0.1)"
+            : scheme.focusShadow,
         }}
         _placeholder={{ color: scheme.iconColor, opacity: 0.6 }}
         ps={startElement ? "3rem" : "1rem"}

@@ -1,12 +1,23 @@
-import { Box, Text, HStack, Badge } from "@chakra-ui/react";
+import { Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
 import type { MenuItem } from "../types/restaurant.types";
 import { purple, pink, yellow } from "../../common/theme/colorScheme";
+import { useCart } from "../../cart/hooks/useCartContext";
+import { useRestaurant } from "../hooks/useRestaurantContext";
 
 interface MenuItemCardProps {
   readonly menuItem: MenuItem;
 }
 
 export function MenuItemCard({ menuItem }: MenuItemCardProps) {
+  const { addItem } = useCart();
+  const { selectedRestaurant } = useRestaurant();
+
+  const handleAddToCart = () => {
+    if (selectedRestaurant) {
+      addItem(menuItem, selectedRestaurant.restaurantName);
+    }
+  };
+
   return (
     <Box
       borderWidth="3px"
@@ -53,7 +64,7 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
         </Text>
 
         {menuItem.allergens.length > 0 && (
-          <HStack gap={2} flexWrap="wrap">
+          <HStack gap={2} flexWrap="wrap" mb={3}>
             {menuItem.allergens.map((allergen) => (
               <Badge key={allergen} colorPalette="red" size="sm">
                 {allergen}
@@ -61,6 +72,17 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
             ))}
           </HStack>
         )}
+
+        <Button
+          width="full"
+          bg={purple}
+          color="white"
+          _hover={{ bg: pink }}
+          size="lg"
+          onClick={handleAddToCart}
+        >
+          Add to Cart
+        </Button>
       </Box>
     </Box>
   );

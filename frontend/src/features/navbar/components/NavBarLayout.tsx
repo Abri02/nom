@@ -1,6 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { NavBar } from "./NavBar";
 import { Footer } from "../../common/components/Footer";
+import { FloatingCartButton } from "../../cart/components/FloatingCartButton";
 import { useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 
@@ -23,7 +24,10 @@ export function NavBarLayout({ children }: Readonly<NavBarLayoutProps>) {
   return (
     <Flex direction="column" minH="100vh">
       {showNavBar && <NavBar />}
-      <Box flex="1">{children}</Box>
+      <Box flex="1" position="relative">
+        {children}
+        {showNavBar && <FloatingCartButton />}
+      </Box>
       {showNavBar && <Footer />}
     </Flex>
   );
