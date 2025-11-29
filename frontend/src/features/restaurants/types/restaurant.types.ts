@@ -1,3 +1,14 @@
+export interface RestaurantUser {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  role: "RESTAURANT" | "CUSTOMER" | "COURIER" | "ADMIN" | "UNKNOWN";
+  description?: string;
+  isSuspended: boolean;
+  createdAt: string;
+}
+
 export interface RestaurantProfile {
   restaurantName: string;
   openingHours?: string;

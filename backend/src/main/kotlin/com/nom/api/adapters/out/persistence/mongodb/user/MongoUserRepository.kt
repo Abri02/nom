@@ -51,16 +51,7 @@ class MongoUserRepository(
     }
 
     override suspend fun findAllRestaurants(cuisineType: String?): List<User> {
-        val filter = if (cuisineType != null) {
-            Filters.and(
-                Filters.eq("role", UserRole.RESTAURANT.name),
-                Filters.eq("cuisineType", cuisineType)
-            )
-        } else {
-            Filters.eq("role", UserRole.RESTAURANT.name)
-        }
-
-        return collection.find(filter).toList().map { documentToUser(it) }
+        return collection.find(Filters.eq("role", UserRole.RESTAURANT.name)).toList().map { documentToUser(it) }
     }
 
     

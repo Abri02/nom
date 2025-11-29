@@ -1,9 +1,9 @@
 import { Box, Text } from "@chakra-ui/react";
-import type { RestaurantProfile } from "../types/restaurant.types";
+import type { RestaurantUser } from "../types/restaurant.types";
 import { purple, pink, lightPurple } from "../../common/theme/colorScheme";
 
 interface RestaurantCardProps {
-  restaurant: RestaurantProfile;
+  restaurant: RestaurantUser;
   onClick: () => void;
 }
 
@@ -43,15 +43,15 @@ export function RestaurantCard({ restaurant, onClick }: RestaurantCardProps) {
         mb={2}
         letterSpacing="tight"
       >
-        {restaurant.restaurantName}
+        {restaurant.name}
       </Text>
-      {restaurant.openingHours && (
+      {restaurant.description && (
         <Text fontSize="sm" color="gray.600">
-          🕒 {restaurant.openingHours}
+          🕒 {restaurant.description}
         </Text>
       )}
       <Text fontSize="sm" color={lightPurple} mt={2}>
-        {restaurant.menu.items.length} items
+        📧 {restaurant.email}
       </Text>
     </Box>
   );

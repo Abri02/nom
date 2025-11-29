@@ -1,5 +1,6 @@
 import { apiClient } from '../../../lib/apiClient';
 import type {
+  RestaurantUser,
   RestaurantProfile,
   Menu,
   MenuItem,
@@ -8,10 +9,8 @@ import type {
   UpdateMenuItemRequest,
 } from '../types/restaurant.types';
 
-// --------- Restaurant Profile ---------
-
-export const getAllRestaurants = async (): Promise<RestaurantProfile[]> => {
-  const { data } = await apiClient.get<RestaurantProfile[]>('/api/restaurants/restaurants');
+export const getAllRestaurants = async (): Promise<RestaurantUser[]> => {
+  const { data } = await apiClient.get<RestaurantUser[]>('/api/restaurants');
   return data;
 };
 
@@ -27,8 +26,6 @@ export const updateRestaurantProfile = async (
   const { data } = await apiClient.put<RestaurantProfile>(`/api/restaurants/${restaurantId}/profile`, request);
   return data;
 };
-
-// --------- Menu ---------
 
 export const getMenu = async (restaurantId: string): Promise<Menu> => {
   const { data } = await apiClient.get<Menu>(`/api/restaurants/${restaurantId}/menu`);

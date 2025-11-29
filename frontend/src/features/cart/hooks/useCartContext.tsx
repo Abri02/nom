@@ -1,7 +1,11 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useMemo, useCallback, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { CartItem, CartContextType } from "../types/cart.types";
+import type { CartItem, CartContextType, AddItemRequest } from "../types/cart.types";
 import type { MenuItem } from "../../restaurants/types/restaurant.types";
+import {
+  useGetCart,
+  useUpdateCart,
+} from "../api/useCartQueries";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -9,59 +13,136 @@ interface CartProviderProps {
   readonly children: ReactNode;
 }
 
+interface LocalCartItem {
+  restaurantId: string;
+  menuItem: MenuItem;
+  quantity: number;
+  restaurantName: string;
+}
+
 export function CartProvider({ children }: CartProviderProps) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const { data: backendCart, isLoading: isLoadingCart, error } = useGetCart();
+  const updateCartMutation = useUpdateCart();
 
-  const addItem = (menuItem: MenuItem, restaurantName: string) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (item) => item.menuItem.id === menuItem.id
-      );
+  const [localCartItems, setLocalCartItems] = useState<LocalCartItem[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.menuItem.id === menuItem.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+  if (error) {
+    console.error("Cart API error:", error);
+  }
+
+  useEffect(() => {
+    if (backendCart && !isInitialized) {
+      console.log("Initializing cart from backend:", backendCart);
+      const initialItems: LocalCartItem[] = backendCart.items.map((item) => ({
+        restaurantId: item.restaurantId,
+        menuItem: {
+          id: item.menuItemId,
+          name: item.name,
+          price: item.price,
+          allergens: [],
+          imageUrl: item.imageUrl,
+        },
+        quantity: item.quantity,
+        restaurantName: "",
+      }));
+      setLocalCartItems(initialItems);
+      setIsInitialized(true);
+    }
+  }, [backendCart, isInitialized]);
+
+  const syncToBackend = useCallback((items: LocalCartItem[]) => {
+    if (!isInitialized) return;
+
+    const backendItems: AddItemRequest[] = items.map((item) => ({
+      restaurantId: item.restaurantId,
+      menuItemId: item.menuItem.id,
+      quantity: item.quantity,
+    }));
+
+    console.log("Syncing cart to backend:", backendItems);
+    updateCartMutation.mutate(backendItems);
+  }, [updateCartMutation, isInitialized]);
+
+  const addItem = useCallback(
+    (menuItem: MenuItem, restaurantName: string, restaurantId: string) => {
+      setLocalCartItems((prevItems) => {
+        const existingItem = prevItems.find(
+          (item) => item.menuItem.id === menuItem.id
         );
+
+        let newItems: LocalCartItem[];
+        if (existingItem) {
+          newItems = prevItems.map((item) =>
+            item.menuItem.id === menuItem.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        } else {
+          newItems = [
+            ...prevItems,
+            { menuItem, quantity: 1, restaurantName, restaurantId },
+          ];
+        }
+
+        syncToBackend(newItems);
+        return newItems;
+      });
+    },
+    [syncToBackend]
+  );
+
+  const removeItem = useCallback(
+    (menuItemId: string) => {
+      setLocalCartItems((prevItems) => {
+        const newItems = prevItems.filter((item) => item.menuItem.id !== menuItemId);
+        syncToBackend(newItems);
+        return newItems;
+      });
+    },
+    [syncToBackend]
+  );
+
+  const updateQuantity = useCallback(
+    (menuItemId: string, quantity: number) => {
+      if (quantity <= 0) {
+        removeItem(menuItemId);
+        return;
       }
 
-      return [...prevItems, { menuItem, quantity: 1, restaurantName }];
-    });
-  };
+      setLocalCartItems((prevItems) => {
+        const newItems = prevItems.map((item) =>
+          item.menuItem.id === menuItemId ? { ...item, quantity } : item
+        );
+        syncToBackend(newItems);
+        return newItems;
+      });
+    },
+    [removeItem, syncToBackend]
+  );
 
-  const removeItem = (menuItemId: string) => {
-    setItems((prevItems) =>
-      prevItems.filter((item) => item.menuItem.id !== menuItemId)
-    );
-  };
+  const clearCart = useCallback(() => {
+    setLocalCartItems([]);
+    syncToBackend([]);
+  }, [syncToBackend]);
 
-  const updateQuantity = (menuItemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(menuItemId);
-      return;
-    }
-
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.menuItem.id === menuItemId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const clearCart = () => {
-    setItems([]);
-  };
+  const items: CartItem[] = useMemo(() => {
+    return localCartItems.map((item) => ({
+      menuItem: item.menuItem,
+      quantity: item.quantity,
+      restaurantName: item.restaurantName,
+      lineTotal: item.menuItem.price * item.quantity,
+    }));
+  }, [localCartItems]);
 
   const totalPrice = useMemo(
-    () =>
-      items.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0),
-    [items]
+    () => localCartItems.reduce((sum, item) => sum + item.menuItem.price * item.quantity, 0),
+    [localCartItems]
   );
 
   const totalItems = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity, 0),
-    [items]
+    () => localCartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [localCartItems]
   );
 
   const value = useMemo(
@@ -73,8 +154,9 @@ export function CartProvider({ children }: CartProviderProps) {
       clearCart,
       totalPrice,
       totalItems,
+      isLoading: isLoadingCart && !isInitialized,
     }),
-    [items, totalPrice, totalItems]
+    [items, addItem, removeItem, updateQuantity, clearCart, totalPrice, totalItems, isLoadingCart, isInitialized]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

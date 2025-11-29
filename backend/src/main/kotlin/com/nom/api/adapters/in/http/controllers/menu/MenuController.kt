@@ -4,6 +4,7 @@ import com.nom.api.domain.menu.entities.Menu
 import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.menu.ports.`in`.*
+import com.nom.api.domain.user.entities.User
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -25,13 +26,13 @@ class MenuController(
 
     @GetMapping("/restaurants")
     fun getAllRestaurants(
-    ): ResponseEntity<List<RestaurantProfileResponse>> = runBlocking {
+    ): ResponseEntity<List<User>> = runBlocking {
         return@runBlocking try {
 
             val profile = getAllRestaurantUseCase.execute()
 
             println(">>> profile FOUND, returning 200")
-            ResponseEntity.ok(profile.map { it.toResponse() })
+            ResponseEntity.ok(profile.map { it })
         } catch (e: Exception) {
             e.printStackTrace()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()

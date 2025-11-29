@@ -124,7 +124,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </IconButton>
                     </HStack>
                     <Text fontSize="lg" fontWeight="bold" color={yellow}>
-                      {item.menuItem.price * item.quantity} Ft
+                      {item.lineTotal} Ft
                     </Text>
                   </HStack>
                   <Button

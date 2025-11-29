@@ -10,11 +10,11 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ menuItem }: MenuItemCardProps) {
   const { addItem } = useCart();
-  const { selectedRestaurant } = useRestaurant();
+  const { selectedRestaurant, selectedRestaurantId } = useRestaurant();
 
   const handleAddToCart = () => {
-    if (selectedRestaurant) {
-      addItem(menuItem, selectedRestaurant.restaurantName);
+    if (selectedRestaurant && selectedRestaurantId) {
+      addItem(menuItem, selectedRestaurant.restaurantName, selectedRestaurantId);
     }
   };
 

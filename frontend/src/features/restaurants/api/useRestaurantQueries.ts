@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as restaurantApi from './restaurantApi';
 import type {
+  RestaurantUser,
   RestaurantProfile,
   Menu,
   MenuItem,
@@ -19,10 +20,8 @@ export const restaurantKeys = {
   menu: (id: string) => [...restaurantKeys.all, 'menu', id] as const,
 };
 
-// --------- Restaurant Profile Queries ---------
-
 export const useGetAllRestaurants = () => {
-  return useQuery<RestaurantProfile[], Error>({
+  return useQuery<RestaurantUser[], Error>({
     queryKey: restaurantKeys.list(),
     queryFn: restaurantApi.getAllRestaurants,
   });
@@ -52,8 +51,6 @@ export const useUpdateRestaurantProfile = () => {
     },
   });
 };
-
-// --------- Menu Queries ---------
 
 export const useGetMenu = (restaurantId: string) => {
   return useQuery<Menu, Error>({

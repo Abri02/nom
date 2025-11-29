@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useState, useMemo, useCallback } from "react";
 import type { ReactNode } from "react";
 import type { RestaurantProfile } from "../types/restaurant.types";
 
 interface RestaurantContextType {
   selectedRestaurant: RestaurantProfile | null;
-  setSelectedRestaurant: (restaurant: RestaurantProfile | null) => void;
+  selectedRestaurantId: string | null;
+  setSelectedRestaurant: (restaurant: RestaurantProfile | null, restaurantId?: string | null) => void;
 }
 
 const RestaurantContext = createContext<RestaurantContextType | undefined>(
@@ -16,12 +17,22 @@ interface RestaurantProviderProps {
 }
 
 export function RestaurantProvider({ children }: RestaurantProviderProps) {
-  const [selectedRestaurant, setSelectedRestaurant] =
+  const [selectedRestaurant, setSelectedRestaurantState] =
     useState<RestaurantProfile | null>(null);
+  const [selectedRestaurantId, setSelectedRestaurantId] =
+    useState<string | null>(null);
+
+  const setSelectedRestaurant = useCallback((
+    restaurant: RestaurantProfile | null,
+    restaurantId?: string | null
+  ) => {
+    setSelectedRestaurantState(restaurant);
+    setSelectedRestaurantId(restaurantId ?? null);
+  }, []);
 
   const value = useMemo(
-    () => ({ selectedRestaurant, setSelectedRestaurant }),
-    [selectedRestaurant]
+    () => ({ selectedRestaurant, selectedRestaurantId, setSelectedRestaurant }),
+    [selectedRestaurant, selectedRestaurantId, setSelectedRestaurant]
   );
 
   return (

@@ -1,14 +1,33 @@
 import { Box, Heading, Text, SimpleGrid } from "@chakra-ui/react";
-import { useRestaurant } from "../../hooks/useRestaurantContext";
 import { purple, pink } from "../../../common/theme/colorScheme";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { MenuItemCard } from "../MenuItemCard";
+import { useGetRestaurantProfile } from "../../api/useRestaurantQueries";
+import { useRestaurant } from "../../hooks/useRestaurantContext";
+import { useEffect } from "react";
 
 export function MenuPage() {
-  const { selectedRestaurant } = useRestaurant();
+  const { id: restaurantId } = useParams<{ id: string }>();
+  const { setSelectedRestaurant } = useRestaurant();
 
-  if (!selectedRestaurant) {
+  const { data: restaurant, isLoading, error } = useGetRestaurantProfile(restaurantId || "");
+
+  useEffect(() => {
+    if (restaurant && restaurantId) {
+      setSelectedRestaurant(restaurant, restaurantId);
+    }
+  }, [restaurant, restaurantId, setSelectedRestaurant]);
+
+  if (!restaurantId) {
     return <Navigate to="/restaurants" replace />;
+  }
+
+  if (isLoading) {
+    return <Box p={6}>Loading restaurant menu...</Box>;
+  }
+
+  if (error || !restaurant) {
+    return <Box p={6}>Error loading restaurant: {error?.message || "Restaurant not found"}</Box>;
   }
 
   return (
@@ -34,20 +53,28 @@ export function MenuPage() {
         }}
       >
         <Heading size="4xl" color={purple} mb={3} fontWeight="extrabold">
-          {selectedRestaurant.restaurantName}
+          {restaurant.restaurantName}
         </Heading>
-        {selectedRestaurant.openingHours && (
+        {restaurant.openingHours && (
           <Text fontSize="xl" color="gray.700" fontWeight="medium">
-            🕒 {selectedRestaurant.openingHours}
+            🕒 {restaurant.openingHours}
           </Text>
         )}
       </Box>
 
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
-        {selectedRestaurant.menu.items.map((item) => (
-          <MenuItemCard key={item.id} menuItem={item} />
-        ))}
-      </SimpleGrid>
+      {restaurant.menu && restaurant.menu.items.length > 0 ? (
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
+          {restaurant.menu.items.map((item) => (
+            <MenuItemCard key={item.id} menuItem={item} />
+          ))}
+        </SimpleGrid>
+      ) : (
+        <Box textAlign="center" py={10}>
+          <Text fontSize="xl" color="gray.500">
+            No menu items available
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 }
