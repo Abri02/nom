@@ -29,13 +29,13 @@ class AuthController(
             val existingUser = userRepository.findByEmail(request.email)
             if (existingUser != null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse(null, null, "User with this email already exists", UserRole.UNKNOWN))
+                    .body(AuthResponse(null, null, "User with this email already exists", UserRole.UNKNOWN, null))
             }
 
             // Validate password
             if (request.password.length < 8) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse(null, null, "Password must be at least 8 characters long", UserRole.UNKNOWN))
+                    .body(AuthResponse(null, null, "Password must be at least 8 characters long", UserRole.UNKNOWN, null))
             }
 
             // Create new user
@@ -55,10 +55,10 @@ class AuthController(
             val token = jwtUtil.generateToken(user.email)
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(AuthResponse(token, user.email, "Registration successful", user.role))
+                .body(AuthResponse(token, user.email, "Registration successful", user.role, user.id))
         } catch (e: Exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(AuthResponse(null, null, "Registration failed: ${e.message}", UserRole.UNKNOWN))
+                .body(AuthResponse(null, null, "Registration failed: ${e.message}", UserRole.UNKNOWN, null))
         }
     }
 
@@ -67,19 +67,19 @@ class AuthController(
         try {
             val user = userRepository.findByEmail(request.email)
                 ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponse(null, null, "Invalid credentials",  UserRole.UNKNOWN),)
+                    .body(AuthResponse(null, null, "Invalid credentials",  UserRole.UNKNOWN, null),)
 
             if (!passwordEncoder.matches(request.password, user.passwordHash)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponse(null, null, "Invalid credentials", UserRole.UNKNOWN))
+                    .body(AuthResponse(null, null, "Invalid credentials", UserRole.UNKNOWN, null))
             }
 
             val token = jwtUtil.generateToken(user.email)
 
-            return ResponseEntity.ok(AuthResponse(token, user.email, "Login successful", user.role))
+            return ResponseEntity.ok(AuthResponse(token, user.email, "Login successful", user.role, user.id))
         } catch (e: Exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(AuthResponse(null, null, "Login failed: ${e.message}", UserRole.UNKNOWN))
+                .body(AuthResponse(null, null, "Login failed: ${e.message}", UserRole.UNKNOWN, null))
         }
     }
 }
@@ -102,4 +102,5 @@ data class AuthResponse(
     val email: String?,
     val message: String,
     val role: UserRole,
+    val id: String?,
 )
