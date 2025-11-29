@@ -98,3 +98,34 @@ export const useMarkOrderReady = () => {
     },
   });
 };
+
+// Courier-specific hooks
+export const useCourierDeliveries = (courierId: string) => {
+  return useQuery({
+    queryKey: [...orderQueryKeys.all, "courier", courierId],
+    queryFn: () => orderApi.getCourierDeliveries(courierId),
+    enabled: !!courierId,
+  });
+};
+
+export const usePickupOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: string) => orderApi.pickupOrder(orderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
+    },
+  });
+};
+
+export const useDeliverOrder = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (orderId: string) => orderApi.deliverOrder(orderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
+    },
+  });
+};

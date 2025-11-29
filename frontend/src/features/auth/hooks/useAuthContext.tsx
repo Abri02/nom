@@ -73,20 +73,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         restaurantProfile,
       });
 
-      if (!response.token || !response.email) {
-        throw new Error(response.message || "Registration failed");
+      // Check if response exists and has either token or email
+      if (!response || (!response.token && !response.email)) {
+        throw new Error(response?.message || "Registration failed");
       }
 
       const newUser: User = {
         id: response.id,
-        email: response.email,
+        email: response.email || email,
         role: role,
       };
 
-      localStorage.setItem("authToken", response.token);
+      // Store token if available
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
       localStorage.setItem("user", JSON.stringify(newUser));
 
       setUser(newUser);
+      setIsLoggedIn(true);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Registration failed";
@@ -104,20 +109,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password,
       });
 
-      if (!response.token || !response.email) {
-        throw new Error(response.message || "Invalid credentials");
+      // Check if response exists and has either token or email
+      if (!response || (!response.token && !response.email)) {
+        throw new Error(response?.message || "Invalid credentials");
       }
 
       const loggedInUser: User = {
         id: response.id,
-        email: response.email,
+        email: response.email || email,
         role: response.role,
       };
 
-      localStorage.setItem("authToken", response.token);
+      // Store token if available
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
       localStorage.setItem("user", JSON.stringify(loggedInUser));
 
       setUser(loggedInUser);
+      setIsLoggedIn(true);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Login failed";
       setError(errorMessage);

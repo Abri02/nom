@@ -8,7 +8,7 @@ import {
   Button,
   Menu,
 } from "@chakra-ui/react";
-import { Home, Store, User, LogOut, ChevronDown, ChefHat, Package, ClipboardList } from "lucide-react";
+import { Home, Store, User, LogOut, ChevronDown, ChefHat, Package, ClipboardList, Truck } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuthContext";
 import {
@@ -178,6 +178,30 @@ export function NavBar() {
                   <Text fontSize="sm">Manage Orders</Text>
                 </Link>
               </>
+            )}
+
+            {user?.role === "COURIER" && (
+              <Link
+                onClick={() => navigate("/deliveries")}
+                display="flex"
+                alignItems="center"
+                gap="0.5rem"
+                px="1rem"
+                py="0.5rem"
+                borderRadius="md"
+                color={isActive("/deliveries") ? yellow : "white"}
+                fontWeight={isActive("/deliveries") ? "700" : "500"}
+                bg={isActive("/deliveries") ? `${lightPurple}30` : "transparent"}
+                _hover={{
+                  bg: `${lightPurple}20`,
+                  color: yellow,
+                }}
+                transition="all 0.2s"
+                cursor="pointer"
+              >
+                <Truck size={18} />
+                <Text fontSize="sm">My Deliveries</Text>
+              </Link>
             )}
           </HStack>
 

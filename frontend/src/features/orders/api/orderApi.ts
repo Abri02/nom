@@ -131,4 +131,45 @@ export const orderApi = {
     }
     await apiClient.put(`/api/orders/${orderId}/ready`);
   },
+
+  // Courier-specific endpoints
+  getCourierDeliveries: async (courierId: string): Promise<Order[]> => {
+    if (USE_MOCK_DATA) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Return orders that are ready for pickup or assigned to this courier
+      return mockOrders.filter(
+        (o) =>
+          o.status === "READY" ||
+          (o.courierId === courierId && ["OUT_FOR_DELIVERY", "DELIVERED"].includes(o.status))
+      );
+    }
+    const response = await apiClient.get<Order[]>(`/api/couriers/${courierId}/deliveries`);
+    return response.data;
+  },
+
+  pickupOrder: async (orderId: string): Promise<void> => {
+    if (USE_MOCK_DATA) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
+      if (orderIndex !== -1) {
+        mockOrders[orderIndex].status = "OUT_FOR_DELIVERY";
+        mockOrders[orderIndex].courierId = "courier-001";
+        mockOrders[orderIndex].courierName = "John Courier";
+      }
+      return;
+    }
+    await apiClient.put(`/api/orders/${orderId}/pickup`);
+  },
+
+  deliverOrder: async (orderId: string): Promise<void> => {
+    if (USE_MOCK_DATA) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
+      if (orderIndex !== -1) {
+        mockOrders[orderIndex].status = "DELIVERED";
+      }
+      return;
+    }
+    await apiClient.put(`/api/orders/${orderId}/deliver`);
+  },
 };

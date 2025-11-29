@@ -1,23 +1,42 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 export const createApiClient = (baseURL: string = API_BASE_URL) => {
   const client = axios.create({
     baseURL,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
-  // Add token to requests if available
-  client.interceptors.request.use((config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  client.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return config;
-  });
+  );
+
+  // Add response interceptor for better error handling
+  client.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        console.error("Unauthorized - Token might be invalid or expired");
+        // Optionally clear auth and redirect to login
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+      }
+      return Promise.reject(error);
+    }
+  );
 
   return client;
 };

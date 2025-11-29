@@ -6,6 +6,7 @@ import { purple, pink, yellow } from "../../common/theme/colorScheme";
 import { NomButtons } from "../../common/components/NomButton";
 import { NomInputs } from "../../common/components/NomInput";
 import { useAuth } from "../hooks/useAuthContext";
+import { toaster } from "../../../components/ui/toaster";
 
 type RegisterFormInputs = {
   name: string;
@@ -50,7 +51,12 @@ export function RegisterForm({ userType }: RegisterFormProps) {
 
   const onSubmit = handleSubmit(async (data: RegisterFormInputs) => {
     if (data.password !== data.confirmPassword) {
-      console.log("A jelszavak nem egyeznek");
+      toaster.create({
+        title: "Hiba",
+        description: "A jelszavak nem egyeznek",
+        type: "error",
+        duration: 3000,
+      });
       return;
     }
 
@@ -78,10 +84,21 @@ export function RegisterForm({ userType }: RegisterFormProps) {
           }),
       });
 
-      console.log("Sikeres regisztráció!");
+      toaster.create({
+        title: "Sikeres regisztráció!",
+        description: "Üdvözlünk a NOM-on!",
+        type: "success",
+        duration: 3000,
+      });
+
       navigate("/home");
     } catch (err) {
-      console.error("Regisztráció sikertelen:", err);
+      toaster.create({
+        title: "Regisztráció sikertelen",
+        description: err instanceof Error ? err.message : "Kérjük, próbáld újra később",
+        type: "error",
+        duration: 5000,
+      });
     }
   });
 
