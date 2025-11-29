@@ -1,5 +1,6 @@
 package com.nom.api.domain.user.entities
 
+import com.nom.api.domain.cart.entities.Cart
 import java.time.LocalDateTime
 
 data class User(
@@ -11,6 +12,7 @@ data class User(
     val role: UserRole,
     val description: String? = null, //pl ahhoz hogy milyen konyha
     val isSuspended: Boolean = false,
+    val cart: Cart?,
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {

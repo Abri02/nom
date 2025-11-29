@@ -1,18 +1,11 @@
 package com.nom.api.domain.cart.entities
 
-import java.math.BigDecimal
-
 data class Cart(
     val id: String? = null,
-    val customerId: String? = null,      // Kié a kosár
-    var restaurantId: String? = null, // Melyik étteremből (null, ha üres)
+    val customerId: String? = null,
+    var restaurantId: String? = null,
     val items: MutableList<CartItem> = mutableListOf(),
-    var totalPrice: BigDecimal = BigDecimal.ZERO
+    var totalPrice: Long = 0
 ) {
-    // Segédfüggvény az újraszámoláshoz
-    fun calculateTotal() {
-        totalPrice = items.fold(BigDecimal.ZERO) { acc, item ->
-            acc + (item.price * item.quantity.toBigDecimal())
-        }
-    }
+
 }

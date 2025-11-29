@@ -28,12 +28,12 @@ class CreateOrderUseCaseImpl(
             ?: throw IllegalArgumentException("Étterem nem található")
 
         // 2. OrderItem-ek összeállítása és ár számolása
-        var calculatedTotalPrice = BigDecimal.ZERO
+        var calculatedTotalPrice: Long = 0
         val finalOrderItems = command.items.map { itemCmd ->
             val menuItem = restaurantMenu.menuItems.find { it.id == itemCmd.menuItemId }
                 ?: throw IllegalArgumentException("A termék nem található: ${itemCmd.menuItemId}")
 
-            calculatedTotalPrice += menuItem.price * itemCmd.quantity.toBigDecimal()
+            calculatedTotalPrice += menuItem.price * itemCmd.quantity
 
             OrderItem(
                 menuItemId = menuItem.id,

@@ -1,9 +1,8 @@
 package com.nom.api.adapters.`in`.http.controllers.cart
 
-import com.nom.api.domain.cart.entities.Cart
-import com.nom.api.domain.cart.ports.`in`.AddItemCommand
-import com.nom.api.domain.cart.ports.`in`.ManageCartUseCase
-import com.nom.api.domain.ports.out.UserRepository
+import com.nom.api.application.`use-cases`.cart.RemoveItemFromCartUseCaseImpl
+import com.nom.api.domain.cart.ports.`in`.*
+import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -12,55 +11,72 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/cart")
 class CartController(
-    private val manageCartUseCase: ManageCartUseCase,
-    private val userRepository: UserRepository
+    private val addItemToCartUseCase: AddItemToCartUseCase,
+    private val clearCartUseCase: ClearCartUseCase,
+    private val getCartUseCase: GetCartUseCase,
+    private val removeItemFromCartUseCase: RemoveItemFromCartUseCase,
+    private val updateCartUseCase: UpdateCartUseCase,
 ) {
 
     @GetMapping
-    fun getCart(@AuthenticationPrincipal email: String?): ResponseEntity<Cart> {
-        if (email == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+    fun getCart(
+        @AuthenticationPrincipal user: AuthUser?
+    ): ResponseEntity<CartDetails> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-        val user = userRepository.findByEmail(email)
-            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-
-        val cart = manageCartUseCase.getCart(user.id!!)
+        val customerId = principal.id
+        val cart = getCartUseCase.getCart(customerId)
         return ResponseEntity.ok(cart)
     }
 
     @PostMapping("/items")
-    fun addItem(
-        @AuthenticationPrincipal email: String?,
-        @RequestBody request: AddCartItemRequest
-    ): ResponseEntity<Void> {
-        if (email == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+    fun addItemToCart(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: AddItemRequest
+    ): ResponseEntity<CartDetails> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val customerId = principal.id
 
-        val user = userRepository.findByEmail(email)
-            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-
-        manageCartUseCase.addItem(
-            user.id!!,
-            AddItemCommand(request.restaurantId, request.menuItemId, request.quantity)
-        )
-        return ResponseEntity.ok().build()
+        val updatedCart = addItemToCartUseCase.addItem(customerId, request)
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCart)
     }
 
-    @DeleteMapping("/items/{itemId}")
+    @DeleteMapping
+    fun clearCart(
+        @AuthenticationPrincipal user: AuthUser?
+    ): ResponseEntity<CartDetails> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val customerId = principal.id
+
+        val clearedCart = clearCartUseCase.clearCart(customerId)
+        return ResponseEntity.ok(clearedCart)
+    }
+
+    @DeleteMapping("/items/{menuItemId}")
     fun removeItem(
-        @AuthenticationPrincipal email: String?,
-        @PathVariable itemId: String
-    ): ResponseEntity<Void> {
-        if (email == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        @AuthenticationPrincipal user: AuthUser?,
+        @PathVariable menuItemId: String
+    ): ResponseEntity<CartDetails> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val customerId = principal.id
 
-        val user = userRepository.findByEmail(email)
-            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-
-        manageCartUseCase.removeItem(user.id!!, itemId)
-        return ResponseEntity.ok().build()
+        val updatedCart = removeItemFromCartUseCase.removeItem(customerId, menuItemId)
+        return ResponseEntity.ok(updatedCart)
     }
+
+    @PutMapping("/items")
+    fun updateCart(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody items: List<AddItemRequest>
+    ): ResponseEntity<CartDetails> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val updatedCart = updateCartUseCase.updateCart(principal.id, items)
+        return ResponseEntity.ok(updatedCart)
+    }
+
+
+
 }
 
-data class AddCartItemRequest(
-    val restaurantId: String,
-    val menuItemId: String,
-    val quantity: Int
-)
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
+class UnauthenticatedException(message: String) : RuntimeException(message)

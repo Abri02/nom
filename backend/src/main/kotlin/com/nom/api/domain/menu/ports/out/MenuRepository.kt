@@ -6,32 +6,32 @@ import com.nom.api.domain.menu.entities.RestaurantProfile
 
 interface MenuRepository {
 
-    suspend fun getRestaurantProfile(restaurantId: String): RestaurantProfile?
+    fun getRestaurantProfile(restaurantId: String): RestaurantProfile?
 
-    suspend fun updateRestaurantProfile(
+    fun updateRestaurantProfile(
         restaurantId: String,
         profile: RestaurantProfile
     ): RestaurantProfile
 
-    suspend fun getMenu(restaurantId: String): Menu?
+    fun getMenu(restaurantId: String): Menu?
 
-    suspend fun addMenuItem(
+    fun addMenuItem(
         restaurantId: String,
         item: MenuItem
     ): MenuItem
 
 
-    suspend fun updateMenuItem(
+    fun updateMenuItem(
         restaurantId: String,
         item: MenuItem
     ): MenuItem
 
-    suspend fun deleteMenuItem(
+    fun deleteMenuItem(
         restaurantId: String,
         menuItemId: String
     ): Boolean
 
-    suspend fun findAllRestaurants(): List<RestaurantProfile>
+    fun findAllRestaurants(): List<RestaurantProfile>
 
     fun findByRestaurantId(restaurantId: String): Menu?
 }

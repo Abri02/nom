@@ -2,6 +2,8 @@ package com.nom.api.adapters.out.persistence.mongodb
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import com.nom.api.domain.cart.entities.Cart
+import com.nom.api.domain.cart.entities.CartItem
 import com.nom.api.domain.ports.out.UserRepository
 import com.nom.api.domain.user.entities.User
 import com.nom.api.domain.user.entities.UserRole
@@ -79,6 +81,21 @@ class MongoUserRepository(
     }
 
     private fun documentToUser(doc: Document): User {
+        val id = doc.getString("_id")
+
+        val cartDoc = doc.get("cart", Document::class.java)
+        val cart = if (cartDoc != null) {
+            documentToCart(cartDoc, id)
+        } else {
+            // ha nincs cart a usernél, csinálunk egy üreset
+            Cart(
+                customerId = id,
+                restaurantId = null,
+                items = mutableListOf(),
+                totalPrice = 0L
+            )
+        }
+
         return User(
             id = doc.getString("_id"),
             name = doc.getString("name"),
@@ -89,7 +106,32 @@ class MongoUserRepository(
             createdAt = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(doc.getLong("createdAt")),
                 ZoneId.systemDefault()
+            ),
+            cart = cart
+        )
+    }
+
+    private fun documentToCart(cartDoc: Document, fallbackCustomerId: String? = null): Cart {
+        val customerId = cartDoc.getString("customerId") ?: fallbackCustomerId
+        val restaurantId = cartDoc.getString("restaurantId")
+        val totalPrice = (cartDoc.get("totalPrice") as? Number)?.toLong() ?: 0L
+
+        val itemsDocs = cartDoc.getList("items", Document::class.java) ?: emptyList()
+
+        val items = itemsDocs.map { itemDoc ->
+            CartItem(
+                restaurantId = itemDoc.getString("restaurantId"),
+                menuItemId = itemDoc.getString("menuItemId"),
+                quantity = itemDoc.getInteger("quantity") ?: 0
             )
+        }.toMutableList()
+
+        return Cart(
+            id = cartDoc.getString("id"),
+            customerId = customerId,
+            restaurantId = restaurantId,
+            items = items,
+            totalPrice = totalPrice
         )
     }
 }

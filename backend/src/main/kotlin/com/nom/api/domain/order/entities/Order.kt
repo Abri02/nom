@@ -1,6 +1,5 @@
 package com.nom.api.domain.order.entities
 
-import java.math.BigDecimal
 import java.time.LocalDateTime
 
 data class Order(
@@ -10,7 +9,7 @@ data class Order(
     var courierId: String? = null,
     val items: List<OrderItem>,
     val deliveryAddress: Address,
-    val totalPrice: BigDecimal,
+    val totalPrice: Long,
     val paymentMethod: PaymentMethod,
     var status: OrderStatus = OrderStatus.NEW,
     val createdAt: LocalDateTime = LocalDateTime.now()

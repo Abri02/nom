@@ -20,12 +20,12 @@ class MongoMenuRepository(
     private val collection: MongoCollection<Document>
 ) : MenuRepository {
 
-    override suspend fun getRestaurantProfile(restaurantId: String): RestaurantProfile? {
+    override fun getRestaurantProfile(restaurantId: String): RestaurantProfile? {
         val doc = collection.find(Filters.eq("_id", restaurantId)).firstOrNull()
         return doc?.let { documentToRestaurantProfile(it) }
     }
 
-    override suspend fun updateRestaurantProfile(
+    override fun updateRestaurantProfile(
         restaurantId: String,
         profile: RestaurantProfile
     ): RestaurantProfile {
@@ -41,13 +41,13 @@ class MongoMenuRepository(
         return profile
     }
 
-    override suspend fun getMenu(restaurantId: String): Menu? {
+    override fun getMenu(restaurantId: String): Menu? {
         val doc = collection.find(Filters.eq("_id", restaurantId)).firstOrNull() ?: return null
         val menuDoc = doc.get("menu", Document::class.java)
         return documentToMenu(menuDoc)
     }
 
-    override suspend fun addMenuItem(
+    override fun addMenuItem(
         restaurantId: String,
         item: MenuItem
     ): MenuItem {
@@ -69,7 +69,7 @@ class MongoMenuRepository(
         return menuItem
     }
 
-    override suspend fun updateMenuItem(
+    override fun updateMenuItem(
         restaurantId: String,
         item: MenuItem
     ): MenuItem {
@@ -94,7 +94,7 @@ class MongoMenuRepository(
         return item
     }
 
-    override suspend fun deleteMenuItem(
+    override fun deleteMenuItem(
         restaurantId: String,
         menuItemId: String
     ): Boolean {
@@ -108,14 +108,14 @@ class MongoMenuRepository(
         return result.modifiedCount > 0
     }
 
-    override suspend fun findAllRestaurants(): List<RestaurantProfile> {
+    override fun findAllRestaurants(): List<RestaurantProfile> {
         return collection.find()
             .map { doc -> documentToRestaurantProfile(doc) }
             .toList()
     }
 
     override fun findByRestaurantId(restaurantId: String): Menu? {
-        TODO("Not yet implemented")
+        return getMenu(restaurantId)
     }
 
     // ---------- Mapping függvények ----------
@@ -155,8 +155,7 @@ class MongoMenuRepository(
             .append("imageUrl", item.imageUrl)
 
     private fun documentToMenuItem(doc: Document): MenuItem {
-        val priceNumber = doc.get("price") as Number
-        val price = BigDecimal.valueOf(priceNumber.toDouble())
+        val priceNumber = (doc.get("price") as? Number)?.toLong() ?: 0L
 
         @Suppress("UNCHECKED_CAST")
         val allergens = doc.get("allergens") as? List<String> ?: emptyList()
@@ -165,7 +164,7 @@ class MongoMenuRepository(
             id = doc.getString("id"),
             name = doc.getString("name"),
             description = doc.getString("description"),
-            price = price,
+            price = priceNumber,
             allergens = allergens,
             imageUrl = doc.getString("imageUrl")
         )

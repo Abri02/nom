@@ -23,9 +23,10 @@ class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.toByteArray())
     }
 
-    fun generateToken(email: String): String {
+    fun generateToken(userId: String, email: String): String {
         return Jwts.builder()
             .subject(email)
+            .claim("userId", userId)
             .issuedAt(Date())
             .expiration(Date(Date().time + jwtExpirationMs))
             .signWith(getSigningKey())
@@ -40,6 +41,20 @@ class JwtUtil {
                 .parseSignedClaims(token)
                 .payload
                 .subject
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun extractUserId(token: String): String? {
+        return try {
+            val claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .payload
+
+            claims["userId"] as? String
         } catch (e: Exception) {
             null
         }

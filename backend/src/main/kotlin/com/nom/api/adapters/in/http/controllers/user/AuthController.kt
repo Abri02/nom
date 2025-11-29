@@ -74,7 +74,7 @@ class AuthController(
                     .body(AuthResponse(null, null, "Invalid credentials", UserRole.UNKNOWN, null))
             }
 
-            val token = jwtUtil.generateToken(user.email)
+            val token = jwtUtil.generateToken(user.id, user.email)
 
             return ResponseEntity.ok(AuthResponse(token, user.email, "Login successful", user.role, user.id))
         } catch (e: Exception) {

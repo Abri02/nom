@@ -38,7 +38,8 @@ class CreateUserUseCaseImpl(
             passwordHash = passwordHash,
             phoneNumber = request.phoneNumber,
             role = request.role,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
+            cart = null
         )
 
         val savedUser = userRepository.save(user)

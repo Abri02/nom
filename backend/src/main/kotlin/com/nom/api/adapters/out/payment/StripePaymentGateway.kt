@@ -22,7 +22,7 @@ class StripePaymentGateway(
         Stripe.apiKey = apiKey
     }
 
-    override fun processPayment(amount: BigDecimal, method: PaymentMethod): Boolean {
+    override fun processPayment(amount: Long, method: PaymentMethod): Boolean {
         // 1. Ha nem bankkártya, akkor nem kell Stripe (pl. Utánvét mindig sikeres)
         if (method != PaymentMethod.CREDIT_CARD) {
             return true
@@ -30,7 +30,7 @@ class StripePaymentGateway(
 
         return try {
             // 2. Összeg átváltása a legkisebb pénznemre (HUF esetén fillér/egész, de a Stripe 100-as szorzót vár általában)
-            val amountInCents = amount.multiply(BigDecimal(100)).toLong()
+            val amountInCents = amount * 100
 
             // 3. Fizetési szándék (Intent) létrehozása
             val params = PaymentIntentCreateParams.builder()

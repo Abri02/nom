@@ -35,11 +35,17 @@ class JwtAuthenticationFilter(
 
             if (jwt != null && jwtUtil.validateToken(jwt)) {
                 val email = jwtUtil.extractEmail(jwt)
+                val userId = jwtUtil.extractUserId(jwt)
 
 
-                if (email != null) {
+                if (email != null && userId != null) {
+                    val principal = AuthUser(
+                        id = userId,
+                        email = email
+                    )
+
                     val authentication = UsernamePasswordAuthenticationToken(
-                        email,
+                        principal,
                         null,
                         emptyList()
                     )

@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 
 @RestController
 @RequestMapping("/api/restaurants")
@@ -209,7 +208,7 @@ data class MenuResponse(
 data class CreateMenuItemHttpRequest(
     val name: String,
     val description: String? = null,
-    val price: BigDecimal,
+    val price: Long,
     val allergens: List<String> = emptyList(),
     val imageUrl: String? = null
 )
@@ -217,7 +216,7 @@ data class CreateMenuItemHttpRequest(
 data class UpdateMenuItemHttpRequest(
     val name: String,
     val description: String? = null,
-    val price: BigDecimal,
+    val price: Long,
     val allergens: List<String> = emptyList(),
     val imageUrl: String? = null
 )
@@ -226,7 +225,7 @@ data class MenuItemResponse(
     val id: String,
     val name: String,
     val description: String?,
-    val price: BigDecimal,
+    val price: Long,
     val allergens: List<String>,
     val imageUrl: String?
 )
