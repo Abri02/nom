@@ -22,46 +22,6 @@ class AuthController(
     private val jwtUtil: JwtUtil
 ) {
 
-    @PostMapping("/register")
-    suspend fun register(@RequestBody request: RegisterRequest): ResponseEntity<AuthResponse> {
-        try {
-            // Check if user already exists
-            val existingUser = userRepository.findByEmail(request.email)
-            if (existingUser != null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse(null, null, "User with this email already exists", UserRole.UNKNOWN, null))
-            }
-
-            // Validate password
-            if (request.password.length < 8) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse(null, null, "Password must be at least 8 characters long", UserRole.UNKNOWN, null))
-            }
-
-            // Create new user
-            val user = User(
-                id = UUID.randomUUID().toString(),
-                name = request.name,
-                email = request.email,
-                passwordHash = passwordEncoder.encode(request.password),
-                phoneNumber = request.phoneNumber,
-                role = request.role ?: UserRole.CUSTOMER,
-                createdAt = LocalDateTime.now()
-            )
-
-            userRepository.save(user)
-
-            // Generate token
-            val token = jwtUtil.generateToken(user.email)
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                .body(AuthResponse(token, user.email, "Registration successful", user.role, user.id))
-        } catch (e: Exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(AuthResponse(null, null, "Registration failed: ${e.message}", UserRole.UNKNOWN, null))
-        }
-    }
-
     @PostMapping("/login")
     suspend fun login(@RequestBody request: LoginRequest): ResponseEntity<AuthResponse> {
         try {
