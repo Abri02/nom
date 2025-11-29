@@ -8,7 +8,7 @@ import {
   Button,
   Menu,
 } from "@chakra-ui/react";
-import { Home, Store, User, LogOut, ChevronDown } from "lucide-react";
+import { Home, Store, User, LogOut, ChevronDown, ChefHat } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuthContext";
 import {
@@ -107,6 +107,30 @@ export function NavBar() {
               <Store size={18} />
               <Text fontSize="sm">Restaurants</Text>
             </Link>
+
+            {user?.role === "RESTAURANT" && (
+              <Link
+                onClick={() => navigate("/my-restaurant")}
+                display="flex"
+                alignItems="center"
+                gap="0.5rem"
+                px="1rem"
+                py="0.5rem"
+                borderRadius="md"
+                color={isActive("/my-restaurant") ? yellow : "white"}
+                fontWeight={isActive("/my-restaurant") ? "700" : "500"}
+                bg={isActive("/my-restaurant") ? `${lightPurple}30` : "transparent"}
+                _hover={{
+                  bg: `${lightPurple}20`,
+                  color: yellow,
+                }}
+                transition="all 0.2s"
+                cursor="pointer"
+              >
+                <ChefHat size={18} />
+                <Text fontSize="sm">My Restaurant</Text>
+              </Link>
+            )}
           </HStack>
 
           <Menu.Root positioning={{ placement: "bottom", gutter: 8 }}>

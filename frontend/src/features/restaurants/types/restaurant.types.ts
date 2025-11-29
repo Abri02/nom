@@ -1,7 +1,7 @@
 export interface RestaurantProfile {
   restaurantName: string;
   openingHours?: string;
-  menu: Menu;
+  menu?: Menu;
 }
 
 export interface Menu {

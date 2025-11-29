@@ -14,6 +14,8 @@ type RegisterFormInputs = {
   confirmPassword: string;
   address?: string;
   phoneNumber?: string;
+  startTime?: string;
+  endTime?: string;
 };
 
 interface RegisterFormProps {
@@ -66,10 +68,18 @@ export function RegisterForm({ userType }: RegisterFormProps) {
         //TODO: ADD PHONE NUMBER PROPERLY
         phoneNumber: data.phoneNumber || "+3690512553",
         role: roleMap[userType],
+        ...(roleMap[userType] === "RESTAURANT" &&
+          data.startTime &&
+          data.endTime && {
+            restaurantProfile: {
+              restaurantName: data.name,
+              openingHours: `${data.startTime} - ${data.endTime}`,
+            },
+          }),
       });
 
       console.log("Sikeres regisztráció!");
-      navigate("/");
+      navigate("/home");
     } catch (err) {
       console.error("Regisztráció sikertelen:", err);
     }
@@ -195,33 +205,81 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                 </Field.Root>
 
                 {userType === "restaurant" && (
-                  <Field.Root invalid={!!errors.address}>
-                    <Field.Label fontWeight="700" color={yellow} fontSize="sm">
-                      Cím
-                    </Field.Label>
-                    <NomInputs
-                      {...formRegister("address", {
-                        required: "A cím kötelező",
-                        minLength: {
-                          value: 5,
-                          message: "A cím legalább 5 karakter hosszú",
-                        },
-                      })}
-                      type="text"
-                      placeholder="Utca, város, irányítószám"
-                      startElement={<MapPin size={20} />}
-                      isInvalid={!!errors.address}
-                    />
-                    {errors.address && (
-                      <Field.ErrorText
-                        fontSize="sm"
-                        color="red.500"
-                        mt="0.5rem"
-                      >
-                        {errors.address.message}
-                      </Field.ErrorText>
-                    )}
-                  </Field.Root>
+                  <>
+                    <Field.Root invalid={!!errors.address}>
+                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                        Cím
+                      </Field.Label>
+                      <NomInputs
+                        {...formRegister("address", {
+                          required: "A cím kötelező",
+                          minLength: {
+                            value: 5,
+                            message: "A cím legalább 5 karakter hosszú",
+                          },
+                        })}
+                        type="text"
+                        placeholder="Utca, város, irányítószám"
+                        startElement={<MapPin size={20} />}
+                        isInvalid={!!errors.address}
+                      />
+                      {errors.address && (
+                        <Field.ErrorText
+                          fontSize="sm"
+                          color="red.500"
+                          mt="0.5rem"
+                        >
+                          {errors.address.message}
+                        </Field.ErrorText>
+                      )}
+                    </Field.Root>
+
+                    <Field.Root invalid={!!errors.startTime}>
+                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                        Nyitás
+                      </Field.Label>
+                      <NomInputs
+                        {...formRegister("startTime", {
+                          required: "A nyitás ideje kötelező",
+                        })}
+                        type="time"
+                        placeholder="09:00"
+                        isInvalid={!!errors.startTime}
+                      />
+                      {errors.startTime && (
+                        <Field.ErrorText
+                          fontSize="sm"
+                          color="red.500"
+                          mt="0.5rem"
+                        >
+                          {errors.startTime.message}
+                        </Field.ErrorText>
+                      )}
+                    </Field.Root>
+
+                    <Field.Root invalid={!!errors.endTime}>
+                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                        Zárás
+                      </Field.Label>
+                      <NomInputs
+                        {...formRegister("endTime", {
+                          required: "A zárás ideje kötelező",
+                        })}
+                        type="time"
+                        placeholder="22:00"
+                        isInvalid={!!errors.endTime}
+                      />
+                      {errors.endTime && (
+                        <Field.ErrorText
+                          fontSize="sm"
+                          color="red.500"
+                          mt="0.5rem"
+                        >
+                          {errors.endTime.message}
+                        </Field.ErrorText>
+                      )}
+                    </Field.Root>
+                  </>
                 )}
 
                 {userType === "courier" && (

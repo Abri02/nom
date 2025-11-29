@@ -1,3 +1,5 @@
+import type { RestaurantProfile } from "../../restaurants/types/restaurant.types";
+
 export interface User {
   id?: string;
   email: string;
@@ -22,17 +24,18 @@ export interface RegisterRequest {
   password: string;
   phoneNumber: string;
   role: string;
+  restaurantProfile?: RestaurantProfile;
 }
 
 export interface AuthResponse {
   token: string | null;
   email: string | null;
   message: string;
-  role: UserType
+  role: UserType;
+  id?: string;
 }
 
-type UserType = "CUSTOMER" | "RESTAURANT" | "COURIER" | "ADMIN" | "UNKNOWN"
-
+type UserType = "CUSTOMER" | "RESTAURANT" | "COURIER" | "ADMIN" | "UNKNOWN";
 
 export interface AuthContextType extends AuthState {
   login: (loginRequest: LoginRequest) => Promise<void>;

@@ -1,4 +1,11 @@
-import { createContext, useState, useContext, useMemo, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  useContext,
+  useMemo,
+  useEffect,
+  useCallback,
+} from "react";
 import type { ReactNode } from "react";
 import type {
   AuthContextType,
@@ -52,6 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     password,
     phoneNumber,
     role,
+    restaurantProfile,
   }: RegisterRequest) => {
     setError(null);
 
@@ -62,6 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         phoneNumber,
         role,
         name,
+        restaurantProfile,
       });
 
       if (!response.token || !response.email) {
@@ -69,6 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       const newUser: User = {
+        id: response.userId,
         email: response.email,
         role: role,
       };
@@ -99,6 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       const loggedInUser: User = {
+        id: response.id,
         email: response.email,
         role: response.role,
       };
@@ -114,13 +125,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser(null);
     setError(null);
-  };
+  }, []);
 
   const clearError = () => {
     setError(null);
@@ -152,6 +163,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       login,
       logout,
       register,
+      isLoggedIn,
     ]
   );
 

@@ -102,7 +102,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       >
                         −
                       </IconButton>
-                      <Text fontWeight="bold" minW="30px" textAlign="center">
+                      <Text
+                        fontWeight="bold"
+                        minW="30px"
+                        color={purple}
+                        textAlign="center"
+                      >
                         {item.quantity}
                       </Text>
                       <IconButton
