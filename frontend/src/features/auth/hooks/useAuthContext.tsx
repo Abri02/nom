@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       const newUser: User = {
-        id: response.userId,
+        id: response.id,
         email: response.email,
         role: role,
       };

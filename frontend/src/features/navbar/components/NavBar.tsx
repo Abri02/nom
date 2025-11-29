@@ -8,7 +8,7 @@ import {
   Button,
   Menu,
 } from "@chakra-ui/react";
-import { Home, Store, User, LogOut, ChevronDown, ChefHat } from "lucide-react";
+import { Home, Store, User, LogOut, ChevronDown, ChefHat, Package, ClipboardList } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuthContext";
 import {
@@ -108,18 +108,18 @@ export function NavBar() {
               <Text fontSize="sm">Restaurants</Text>
             </Link>
 
-            {user?.role === "RESTAURANT" && (
+            {user?.role === "CUSTOMER" && (
               <Link
-                onClick={() => navigate("/my-restaurant")}
+                onClick={() => navigate("/orders")}
                 display="flex"
                 alignItems="center"
                 gap="0.5rem"
                 px="1rem"
                 py="0.5rem"
                 borderRadius="md"
-                color={isActive("/my-restaurant") ? yellow : "white"}
-                fontWeight={isActive("/my-restaurant") ? "700" : "500"}
-                bg={isActive("/my-restaurant") ? `${lightPurple}30` : "transparent"}
+                color={isActive("/orders") ? yellow : "white"}
+                fontWeight={isActive("/orders") ? "700" : "500"}
+                bg={isActive("/orders") ? `${lightPurple}30` : "transparent"}
                 _hover={{
                   bg: `${lightPurple}20`,
                   color: yellow,
@@ -127,9 +127,57 @@ export function NavBar() {
                 transition="all 0.2s"
                 cursor="pointer"
               >
-                <ChefHat size={18} />
-                <Text fontSize="sm">My Restaurant</Text>
+                <Package size={18} />
+                <Text fontSize="sm">My Orders</Text>
               </Link>
+            )}
+
+            {user?.role === "RESTAURANT" && (
+              <>
+                <Link
+                  onClick={() => navigate("/my-restaurant")}
+                  display="flex"
+                  alignItems="center"
+                  gap="0.5rem"
+                  px="1rem"
+                  py="0.5rem"
+                  borderRadius="md"
+                  color={isActive("/my-restaurant") ? yellow : "white"}
+                  fontWeight={isActive("/my-restaurant") ? "700" : "500"}
+                  bg={isActive("/my-restaurant") ? `${lightPurple}30` : "transparent"}
+                  _hover={{
+                    bg: `${lightPurple}20`,
+                    color: yellow,
+                  }}
+                  transition="all 0.2s"
+                  cursor="pointer"
+                >
+                  <ChefHat size={18} />
+                  <Text fontSize="sm">My Restaurant</Text>
+                </Link>
+
+                <Link
+                  onClick={() => navigate("/manage-orders")}
+                  display="flex"
+                  alignItems="center"
+                  gap="0.5rem"
+                  px="1rem"
+                  py="0.5rem"
+                  borderRadius="md"
+                  color={isActive("/manage-orders") ? yellow : "white"}
+                  fontWeight={isActive("/manage-orders") ? "700" : "500"}
+                  bg={isActive("/manage-orders") ? `${lightPurple}30` : "transparent"}
+                  _hover={{
+                    bg: `${lightPurple}20`,
+                    color: yellow,
+                  }}
+                  transition="all 0.2s"
+                  cursor="pointer"
+                >
+                  <ClipboardList size={18} />
+                  <Text fontSize="sm">Manage Orders</Text>
+                </Link>
+              </>
             )}
           </HStack>
 

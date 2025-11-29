@@ -9,6 +9,8 @@ import { NavBarLayout } from "./features/navbar/components/NavBarLayout";
 import { RestaurantPage } from "./features/restaurants/components/pages/RestaurantPage";
 import { MenuPage } from "./features/restaurants/components/pages/MenuPage";
 import { MyRestaurantPage } from "./features/restaurants/components/pages/MyRestaurantPage";
+import { OrdersPage } from "./features/orders/components/pages/OrdersPage";
+import { ManageOrdersPage } from "./features/orders/components/pages/ManageOrdersPage";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
           <Route path="/restaurants" element={<RestaurantPage />} />
           <Route path="/restaurant/:id" element={<MenuPage />} />
           <Route path="/my-restaurant" element={<MyRestaurantPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/manage-orders" element={<ManageOrdersPage />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </NavBarLayout>
