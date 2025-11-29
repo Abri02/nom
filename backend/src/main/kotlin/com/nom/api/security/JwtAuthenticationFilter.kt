@@ -19,7 +19,10 @@ class JwtAuthenticationFilter(
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         val path = request.requestURI
-        return path.startsWith("/api/auth/") || path == "/api/users"
+        return path.startsWith("/api/auth/") ||
+                path == "/api/users" ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui")
     }
 
     override fun doFilterInternal(
