@@ -39,6 +39,10 @@ class CreateUserUseCaseImpl(
             phoneNumber = request.phoneNumber,
             role = request.role,
             createdAt = LocalDateTime.now(),
+            ZipCode = request.ZipCode,
+            City = request.City,
+            Street =  request.Street,
+            StreetNumber =  request.StreetNumber,
             cart = null
         )
 

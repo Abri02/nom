@@ -9,15 +9,18 @@ import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.menu.ports.out.MenuRepository
 import org.bson.Document
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.util.*
 
+@Repository
 class MongoMenuRepository(
     /**
      * Ugyanaz a collection, mint ami a User-eket tárolja.
      * Minden RESTAURANT role-ú user tartalmazhat egy restaurantProfile mezőt.
      */
-    private val collection: MongoCollection<Document>
+    @Qualifier("restaurantsCollection") private val collection: MongoCollection<Document>
 ) : MenuRepository {
 
     override fun getRestaurantProfile(restaurantId: String): RestaurantProfile? {

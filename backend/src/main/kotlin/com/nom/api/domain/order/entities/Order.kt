@@ -1,5 +1,7 @@
 package com.nom.api.domain.order.entities
 
+import com.nom.api.domain.cart.entities.Cart
+import com.nom.api.domain.menu.entities.MenuItem
 import java.time.LocalDateTime
 
 data class Order(
@@ -7,11 +9,11 @@ data class Order(
     val customerId: String,
     val restaurantId: String,
     var courierId: String? = null,
-    val items: List<OrderItem>,
-    val deliveryAddress: Address,
+    val deliveryAddress: Address? = null,
+    var currentLocation: GeoPoint? = null,
     val totalPrice: Long,
-    val paymentMethod: PaymentMethod,
     var status: OrderStatus = OrderStatus.NEW,
+    val cart: Cart,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
     fun changeStatus(newStatus: OrderStatus) {

@@ -1,6 +1,7 @@
 package com.nom.api.domain.order.entities
 
 data class Address(
+    val houseNumber : Int,
     val street: String,
     val city: String,
     val postalCode: String,

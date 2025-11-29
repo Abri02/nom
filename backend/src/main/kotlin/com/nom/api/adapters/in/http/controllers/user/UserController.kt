@@ -41,6 +41,10 @@ class UserController(
                 password = request.password,
                 phoneNumber = request.phoneNumber,
                 role = request.role,
+                ZipCode = request.zipCode,
+                City = request.city,
+                Street =  request.street,
+                StreetNumber =  request.streetNumber,
                 restaurantProfile = restaurantProfileDomain
             )
 
@@ -71,6 +75,10 @@ data class CreateUserHttpRequest(
     val email: String,
     val password: String,
     val phoneNumber: String,
+    val zipCode : String,
+    val city: String,
+    val street: String,
+    val streetNumber: String,
     val role: UserRole,
     val restaurantProfile: RestaurantProfileHttpRequest? = null
 )

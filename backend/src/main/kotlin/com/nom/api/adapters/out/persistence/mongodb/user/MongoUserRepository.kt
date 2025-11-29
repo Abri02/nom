@@ -19,6 +19,16 @@ class MongoUserRepository(
     private val collection: MongoCollection<Document>
 ) : UserRepository {
 
+    override fun getRandomCourier(): User? {
+        val pipeline = listOf(
+            Document("\$match", Document("role", UserRole.COURIER.name)),
+            Document("\$sample", Document("size", 1))
+        )
+
+        val doc = collection.aggregate(pipeline).firstOrNull()
+        return doc?.let { documentToUser(it) }
+    }
+
     override fun save(user: User): User {
         val document = userToDocument(user)
         collection.insertOne(document)
@@ -66,6 +76,10 @@ class MongoUserRepository(
             .append("passwordHash", user.passwordHash)
             .append("phoneNumber", user.phoneNumber)
             .append("role", user.role.name)
+            .append("zipCode", user.ZipCode)
+            .append("city", user.City)
+            .append("street", user.Street)
+            .append("streetNumber", user.StreetNumber)
             .append("createdAt", user.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
 
         return doc
@@ -98,7 +112,11 @@ class MongoUserRepository(
                 Instant.ofEpochMilli(doc.getLong("createdAt")),
                 ZoneId.systemDefault()
             ),
-            cart = cart
+            cart = cart,
+            ZipCode =  doc.getString("zipCode"),
+            City = doc.getString("city"),
+            Street = doc.getString("street"),
+            StreetNumber = doc.getString("streetNumber"),
         )
     }
 

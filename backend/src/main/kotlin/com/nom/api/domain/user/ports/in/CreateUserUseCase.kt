@@ -19,6 +19,10 @@ data class CreateUserRequest(
     val email: String,
     val password: String,
     val phoneNumber: String,
+    val ZipCode : String,
+    val City: String,
+    val Street: String,
+    val StreetNumber: String,
     val role: UserRole,
     val restaurantProfile: RestaurantProfile? = null
 )

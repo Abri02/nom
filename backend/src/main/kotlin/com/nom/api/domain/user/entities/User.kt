@@ -9,6 +9,10 @@ data class User(
     val email: String,
     val passwordHash: String,
     val phoneNumber: String,
+    val ZipCode : String,
+    val City: String,
+    val Street: String,
+    val StreetNumber: String,
     val role: UserRole,
     val description: String? = null, //pl ahhoz hogy milyen konyha
     val isSuspended: Boolean = false,

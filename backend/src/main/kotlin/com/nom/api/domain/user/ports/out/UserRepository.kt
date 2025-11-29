@@ -12,6 +12,8 @@ interface UserRepository {
 
      fun findAll(): List<User>
 
+     fun getRandomCourier(): User?
+
     suspend fun update(user: User): User
 
     suspend fun delete(id: String): Boolean

@@ -5,9 +5,12 @@ import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.nom.api.adapters.out.persistence.mongodb.MongoUserRepository
 import com.nom.api.adapters.out.persistence.mongodb.menu.MongoMenuRepository
+import com.nom.api.adapters.out.persistence.mongodb.order.MongoOrderRepository
 import com.nom.api.domain.menu.ports.out.MenuRepository
+import com.nom.api.domain.order.ports.out.OrderRepository
 import com.nom.api.domain.ports.out.UserRepository
 import org.bson.Document
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -50,4 +53,16 @@ class MongoConfig {
     @Bean
     fun menuRepository(restaurantsCollection: MongoCollection<Document>): MenuRepository =
         MongoMenuRepository(restaurantsCollection)
+
+    @Bean
+    fun orderCollection(mongoClient: MongoClient): MongoCollection<Document> {
+        val database = mongoClient.getDatabase(databaseName)
+        return database.getCollection("orders")   // ÚJ COLLECTION
+    }
+
+    @Bean
+    fun orderRepository(
+        @Qualifier("orderCollection") ordersCollection: MongoCollection<Document>
+    ): OrderRepository =
+        MongoOrderRepository(ordersCollection)
 }

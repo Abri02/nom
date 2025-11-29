@@ -8,7 +8,7 @@ interface OrderRepository{
     fun findById(orderId: String): Order?
     fun findAllByRestaurantId(restaurantId: String): List<Order>
     fun findAllByRestaurantIdAndStatus(restaurantId: String, status: OrderStatus): List<Order>
-    fun findAllByCustomerId(customerId: String): List<Order>
+    fun findByCustomerId(customerId: String): Order?
     fun findAllByCourierId(courierId: String): List<Order>
     fun findAllByStatus(status: OrderStatus): List<Order>
     fun findAll(): List<Order>
