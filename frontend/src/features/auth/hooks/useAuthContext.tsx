@@ -123,6 +123,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         id: response.id,
         email: response.email || email,
         role: response.role,
+        name: response.name
       };
 
       if (response.token) {

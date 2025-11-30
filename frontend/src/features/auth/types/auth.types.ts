@@ -4,6 +4,7 @@ export interface User {
   id?: string;
   email: string;
   role?: string;
+  name?: string;
 }
 
 export interface AuthState {
@@ -37,6 +38,7 @@ export interface AuthResponse {
   message: string;
   role: UserType;
   id?: string;
+  name?: string;
 }
 
 type UserType = "CUSTOMER" | "RESTAURANT" | "COURIER" | "ADMIN" | "UNKNOWN";

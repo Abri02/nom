@@ -7,7 +7,7 @@ interface NomButtonProps {
   variant?: "solid" | "outline" | "ghost";
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
-  colorScheme?: "primary" | "secondary" | "accent";
+  colorScheme?: "primary" | "secondary" | "accent" | "outline";
   startElement?: ReactNode;
   w?: string;
   h?: string;
@@ -26,21 +26,31 @@ export function NomButtons({
   const colorSchemes = {
     primary: {
       bg: yellow,
-      color: purple,
+      color: "black",
       hoverBg: `${yellow}E6`,
       shadowColor: "rgba(69, 6, 147, 0.25)",
+      borderColor: "transparent",
     },
     secondary: {
       bg: lightPurple,
       color: "white",
       hoverBg: `${lightPurple}E6`,
       shadowColor: "rgba(140, 0, 255, 0.25)",
+      borderColor: "transparent",
     },
     accent: {
       bg: pink,
       color: "white",
       hoverBg: `${pink}E6`,
       shadowColor: "rgba(255, 63, 127, 0.25)",
+      borderColor: "transparent",
+    },
+    outline: {
+      bg: "transparent",
+      color: "yellow",
+      hoverBg: `${yellow}20`,
+      shadowColor: "rgba(69, 6, 147, 0.15)",
+      borderColor: `${yellow}`,
     },
   };
 
@@ -50,9 +60,12 @@ export function NomButtons({
     <Button
       bg={scheme.bg}
       color={scheme.color}
-      size="md"
+      size="lg"
+      px="2rem"
+      fontWeight="700"
       onClick={onClick}
       variant={variant}
+      borderColor={scheme.borderColor}
       type={type}
       _hover={{
         bg: scheme.hoverBg,
@@ -62,7 +75,7 @@ export function NomButtons({
       _active={{
         transform: "translateY(0)",
       }}
-      transition="all 0.2s"
+      transition="all 0.3s"
       {...props}
     >
       <HStack gap="2">

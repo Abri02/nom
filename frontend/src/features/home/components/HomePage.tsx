@@ -24,6 +24,7 @@ import {
   Users,
 } from "lucide-react";
 import { purple, pink, yellow } from "../../common/theme/colorScheme";
+import { NomButtons } from "../../common/components/NomButton";
 
 export function HomePage() {
   const { user, isLoggedIn } = useAuth();
@@ -69,7 +70,7 @@ export function HomePage() {
       features: [
         "Kezeld menüdet és áraid egyszerűen",
         "Fogadd és teljesítsd a rendeléseket",
-        "Követd nyomon bevételeidet",
+        "Kövesd nyomon bevételeidet",
         "Építsd ki vevőkörődet",
       ],
     },
@@ -90,7 +91,6 @@ export function HomePage() {
 
   return (
     <Box bg="gray.900" minH="100vh">
-      {/* Hero Section */}
       <Box
         bgGradient={`linear(to-br, ${purple}, ${pink})`}
         position="relative"
@@ -101,8 +101,7 @@ export function HomePage() {
             <Text
               fontSize={isMobile ? "3xl" : "6xl"}
               fontWeight="900"
-              bgGradient={`linear(to-r, ${yellow}, white)`}
-              bgClip="text"
+              color={`${pink}`}
             >
               NOM
             </Text>
@@ -131,68 +130,37 @@ export function HomePage() {
             {isLoggedIn ? (
               <VStack gap="1rem">
                 <Text fontSize="lg" color={yellow} fontWeight="600">
-                  Üdvözlünk vissza, {user?.email}! 👋
+                  Üdvözlünk vissza, {user?.name}! 👋
                 </Text>
                 <HStack gap="1rem">
-                  <Button
+                  <NomButtons
+                    title="Étteremek böngészése"
                     onClick={() => navigate("/restaurants")}
-                    bg={yellow}
-                    color="black"
-                    size="lg"
-                    px="2rem"
-                    fontWeight="700"
-                    _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
-                    transition="all 0.3s"
-                  >
-                    Étteremek böngészése
-                  </Button>
-                  <Button
+                  ></NomButtons>
+                  <NomButtons
+                    title="Rendeléseim"
+                    colorScheme="outline"
                     onClick={() => navigate("/orders")}
-                    variant="outline"
-                    borderColor={yellow}
-                    color={yellow}
-                    size="lg"
-                    px="2rem"
-                    fontWeight="700"
-                    _hover={{ bg: `${yellow}20` }}
-                  >
-                    Rendeléseim
-                  </Button>
+                  ></NomButtons>
                 </HStack>
               </VStack>
             ) : (
               <HStack gap="1rem">
-                <Button
+                <NomButtons
+                  title="Regisztráció"
                   onClick={() => navigate("/register")}
-                  bg={yellow}
-                  color="black"
-                  size="lg"
-                  px="2rem"
-                  fontWeight="700"
-                  _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
-                  transition="all 0.3s"
-                >
-                  Regisztráció
-                </Button>
-                <Button
+                ></NomButtons>
+                <NomButtons
+                  title="Bejelentkezés"
+                  colorScheme="outline"
                   onClick={() => navigate("/login")}
-                  variant="outline"
-                  borderColor={yellow}
-                  color={yellow}
-                  size="lg"
-                  px="2rem"
-                  fontWeight="700"
-                  _hover={{ bg: `${yellow}20` }}
-                >
-                  Bejelentkezés
-                </Button>
+                ></NomButtons>
               </HStack>
             )}
           </VStack>
         </Container>
       </Box>
 
-      {/* Features Section */}
       <Container maxW="7xl" py="4rem">
         <VStack gap="3rem">
           <VStack gap="1rem" textAlign="center">
@@ -252,7 +220,6 @@ export function HomePage() {
         </VStack>
       </Container>
 
-      {/* User-specific Features */}
       {isLoggedIn && currentUserFeatures && (
         <Box bg="gray.800">
           <Container maxW="7xl" py="4rem">
@@ -341,20 +308,13 @@ export function HomePage() {
                 Csatlakozz több ezer elégedett felhasználónkhoz, és fedezd fel a
                 város legjobb ízeit a saját otthonod kényelméből.
               </Text>
-              <Button
+              <NomButtons
+                title="Kezdjük el! 🚀"
                 onClick={() => navigate("/register")}
-                bg={yellow}
-                color="black"
-                size="lg"
-                px="3rem"
                 py="1.5rem"
+                px="3rem"
                 fontSize="lg"
-                fontWeight="700"
-                _hover={{ transform: "translateY(-2px)", shadow: "2xl" }}
-                transition="all 0.3s"
-              >
-                Kezdjük el! 🚀
-              </Button>
+              ></NomButtons>
             </VStack>
           </Container>
         </Box>
