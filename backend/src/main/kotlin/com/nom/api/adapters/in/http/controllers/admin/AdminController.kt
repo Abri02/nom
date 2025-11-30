@@ -46,7 +46,7 @@ class AdminController(
     @DeleteMapping("/orders")
     fun cancellOrder(
         @AuthenticationPrincipal user: AuthUser?,
-        @PathVariable orderId: String)
+        @RequestParam orderId: String)
         : ResponseEntity<Void>{
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 

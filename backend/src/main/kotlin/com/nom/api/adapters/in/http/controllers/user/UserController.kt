@@ -8,6 +8,8 @@ import com.nom.api.domain.ports.`in`.CreateUserUseCase
 import com.nom.api.domain.user.ports.`in`.AddFavouriteRestaurantUseCase
 import com.nom.api.domain.user.ports.`in`.GetFavouriteRestaurantsUseCase
 import com.nom.api.domain.user.ports.`in`.RemoveFavouriteRestaurantUseCase
+import com.nom.api.domain.user.ports.`in`.UpdateUserRequest
+import com.nom.api.domain.user.ports.`in`.UpdateUserUseCase
 import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,12 +25,45 @@ class UserController(
     private val createUserUseCase: CreateUserUseCase,
     private val addFavouriteRestaurantUseCase: AddFavouriteRestaurantUseCase,
     private val getFavouriteRestaurantsUseCase: GetFavouriteRestaurantsUseCase,
-    private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase
+    private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
 ) {
 
     @PostMapping
-    suspend fun createUser(@RequestBody request: CreateUserHttpRequest): ResponseEntity<Any> {
+    suspend fun createOrUpdateUser(@AuthenticationPrincipal authUser: AuthUser?,@RequestBody request: CreateUserHttpRequest): ResponseEntity<Any> {
         return try {
+            if (request.id != null) {
+                val updatedUser = updateUserUseCase.updateUser(
+                    UpdateUserRequest(
+                        id = request.id,
+                        name = request.name,
+                        email = request.email,
+                        phoneNumber = request.phoneNumber,
+                        street = request.street,
+                        streetNumber = request.streetNumber,
+                        city = request.city,
+                        zipCode = request.zipCode,
+                        role = request.role
+                    )
+                )
+
+                val response = UserResponse(
+                    id = updatedUser.id,
+                    name = updatedUser.name,
+                    email = updatedUser.email,
+                    phoneNumber = updatedUser.phoneNumber,
+                    role = updatedUser.role,
+                    createdAt = updatedUser.createdAt.toString()
+                )
+
+                return ResponseEntity.ok(response)
+            }
+
+
+            if (request.password == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ErrorResponse("Password is required for new users"))
+            }
 
             if (request.role == UserRole.RESTAURANT && request.restaurantProfile == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -39,7 +74,7 @@ class UserController(
                 RestaurantProfile(
                     restaurantName = it.restaurantName,
                     openingHours = it.openingHours,
-                    menu = Menu() // induláskor üres menü
+                    menu = Menu()
                 )
             }
 
@@ -51,8 +86,8 @@ class UserController(
                 role = request.role,
                 ZipCode = request.zipCode,
                 City = request.city,
-                Street =  request.street,
-                StreetNumber =  request.streetNumber,
+                Street = request.street,
+                StreetNumber = request.streetNumber,
                 restaurantProfile = restaurantProfileDomain
             )
 
@@ -141,9 +176,10 @@ class UserController(
 }
 
 data class CreateUserHttpRequest(
+    val id: String?,
     val name: String,
     val email: String,
-    val password: String,
+    val password: String?,
     val phoneNumber: String,
     val zipCode : String,
     val city: String,
