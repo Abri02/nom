@@ -29,6 +29,8 @@ class FinishDeliveryByCourierUseCase(
 
         order.changeStatus(OrderStatus.DELIVERED)
 
+        order.currentLocation = order.deliveryAddress?.coordinates
+
         orderRepository.save(order)
 
         return getOrderByIdUseCase.getOrderById(orderId)
