@@ -7,6 +7,7 @@ import com.nom.api.domain.ports.`in`.CreateUserRequest
 import com.nom.api.domain.ports.`in`.CreateUserUseCase
 import com.nom.api.domain.user.ports.`in`.AddFavouriteRestaurantUseCase
 import com.nom.api.domain.user.ports.`in`.GetFavouriteRestaurantsUseCase
+import com.nom.api.domain.user.ports.`in`.RemoveFavouriteRestaurantUseCase
 import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -22,6 +23,7 @@ class UserController(
     private val createUserUseCase: CreateUserUseCase,
     private val addFavouriteRestaurantUseCase: AddFavouriteRestaurantUseCase,
     private val getFavouriteRestaurantsUseCase: GetFavouriteRestaurantsUseCase,
+    private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase
 ) {
 
     @PostMapping
@@ -108,6 +110,32 @@ class UserController(
 
         val favourites = getFavouriteRestaurantsUseCase.getFavourites(principal.id)
         return ResponseEntity.ok(favourites)
+    }
+
+    @DeleteMapping("/favourites")
+    fun removeFavouriteRestaurant(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: AddFavouriteRestaurantRequest
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        return try {
+            removeFavouriteRestaurantUseCase.removeRestaurant(
+                userId = principal.id,
+                restaurantId = request.restaurantId,
+            )
+
+            val favourites = getFavouriteRestaurantsUseCase.getFavourites(principal.id)
+
+            ResponseEntity.ok(favourites)
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
     }
 
 }
