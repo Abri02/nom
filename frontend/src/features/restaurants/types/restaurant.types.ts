@@ -48,3 +48,7 @@ export interface UpdateMenuItemRequest {
   allergens?: string[];
   imageUrl?: string;
 }
+
+export interface AddFavouriteRestaurantRequest {
+  restaurantId: string;
+}

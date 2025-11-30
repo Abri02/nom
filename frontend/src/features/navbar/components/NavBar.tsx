@@ -8,7 +8,7 @@ import {
   Button,
   Menu,
 } from "@chakra-ui/react";
-import { Home, Store, User, LogOut, ChevronDown, ChefHat, Package, ClipboardList, Truck } from "lucide-react";
+import { Home, Store, User, LogOut, ChevronDown, ChefHat, Package, ClipboardList, Truck, Heart } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuthContext";
 import {
@@ -107,6 +107,30 @@ export function NavBar() {
               <Store size={18} />
               <Text fontSize="sm">Restaurants</Text>
             </Link>
+
+            {user?.role === "CUSTOMER" && (
+              <Link
+                onClick={() => navigate("/favourites")}
+                display="flex"
+                alignItems="center"
+                gap="0.5rem"
+                px="1rem"
+                py="0.5rem"
+                borderRadius="md"
+                color={isActive("/favourites") ? yellow : "white"}
+                fontWeight={isActive("/favourites") ? "700" : "500"}
+                bg={isActive("/favourites") ? `${lightPurple}30` : "transparent"}
+                _hover={{
+                  bg: `${lightPurple}20`,
+                  color: yellow,
+                }}
+                transition="all 0.2s"
+                cursor="pointer"
+              >
+                <Heart size={18} />
+                <Text fontSize="sm">Favourites</Text>
+              </Link>
+            )}
 
             {user?.role === "CUSTOMER" && (
               <Link

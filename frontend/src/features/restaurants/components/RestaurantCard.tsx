@@ -1,13 +1,27 @@
 import { Box, Text } from "@chakra-ui/react";
 import type { RestaurantUser } from "../types/restaurant.types";
 import { purple, pink, lightPurple } from "../../common/theme/colorScheme";
+import { useAddFavouriteRestaurant, useRemoveFavouriteRestaurant } from "../api/useRestaurantQueries";
 
 interface RestaurantCardProps {
   restaurant: RestaurantUser;
   onClick: () => void;
+  isFavourite?: boolean;
 }
 
-export function RestaurantCard({ restaurant, onClick }: RestaurantCardProps) {
+export function RestaurantCard({ restaurant, onClick, isFavourite = false }: RestaurantCardProps) {
+  const addFavourite = useAddFavouriteRestaurant();
+  const removeFavourite = useRemoveFavouriteRestaurant();
+
+  const handleFavouriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isFavourite) {
+      removeFavourite.mutate({ restaurantId: restaurant.id });
+    } else {
+      addFavourite.mutate({ restaurantId: restaurant.id });
+    }
+  };
+
   return (
     <Box
       borderWidth="3px"
@@ -36,6 +50,23 @@ export function RestaurantCard({ restaurant, onClick }: RestaurantCardProps) {
       cursor="pointer"
       transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
     >
+      <Box
+        as="button"
+        aria-label="Toggle favourite"
+        position="absolute"
+        top={4}
+        right={4}
+        fontSize="2xl"
+        onClick={handleFavouriteClick}
+        cursor="pointer"
+        _hover={{ transform: "scale(1.2)" }}
+        transition="transform 0.2s"
+        bg="transparent"
+        border="none"
+        opacity={addFavourite.isPending || removeFavourite.isPending ? 0.5 : 1}
+      >
+        {isFavourite ? "❤️" : "🤍"}
+      </Box>
       <Text
         fontSize="2xl"
         fontWeight="bold"

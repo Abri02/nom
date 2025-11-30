@@ -9,6 +9,7 @@ import { NavBarLayout } from "./features/navbar/components/NavBarLayout";
 import { RestaurantPage } from "./features/restaurants/components/pages/RestaurantPage";
 import { MenuPage } from "./features/restaurants/components/pages/MenuPage";
 import { MyRestaurantPage } from "./features/restaurants/components/pages/MyRestaurantPage";
+import { FavouritesPage } from "./features/restaurants/components/pages/FavouritesPage";
 import { OrdersPage } from "./features/orders/components/pages/OrdersPage";
 import { ManageOrdersPage } from "./features/orders/components/pages/ManageOrdersPage";
 import { CourierDeliveriesPage } from "./features/orders/components/pages/CourierDeliveriesPage";
@@ -35,6 +36,7 @@ function App() {
           />
           <Route path="/home" element={<HomePage />} />
           <Route path="/restaurants" element={<RestaurantPage />} />
+          <Route path="/favourites" element={<FavouritesPage />} />
           <Route path="/restaurant/:id" element={<MenuPage />} />
           <Route path="/my-restaurant" element={<MyRestaurantPage />} />
           <Route path="/orders" element={<OrdersPage />} />

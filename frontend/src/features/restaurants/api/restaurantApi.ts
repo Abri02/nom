@@ -7,6 +7,7 @@ import type {
   UpdateRestaurantProfileRequest,
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
+  AddFavouriteRestaurantRequest,
 } from "../types/restaurant.types";
 
 export const getAllRestaurants = async (): Promise<RestaurantUser[]> => {
@@ -73,4 +74,23 @@ export const deleteMenuItem = async (
   await apiClient.delete(
     `/api/restaurants/${restaurantId}/menu/items/${menuItemId}`
   );
+};
+
+export const getFavouriteRestaurants = async (): Promise<RestaurantProfile[]> => {
+  const { data } = await apiClient.get<RestaurantProfile[]>(
+    "/api/users/favourites/restaurants"
+  );
+  return data;
+};
+
+export const addFavouriteRestaurant = async (
+  request: AddFavouriteRestaurantRequest
+): Promise<void> => {
+  await apiClient.post("/api/users/favourites", request);
+};
+
+export const removeFavouriteRestaurant = async (
+  request: AddFavouriteRestaurantRequest
+): Promise<void> => {
+  await apiClient.delete("/api/users/favourites", { data: request });
 };

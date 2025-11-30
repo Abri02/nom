@@ -8,6 +8,7 @@ import type {
   UpdateRestaurantProfileRequest,
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
+  AddFavouriteRestaurantRequest,
 } from '../types/restaurant.types';
 
 // Query Keys
@@ -18,6 +19,7 @@ export const restaurantKeys = {
   details: () => [...restaurantKeys.all, 'detail'] as const,
   detail: (id: string) => [...restaurantKeys.details(), id] as const,
   menu: (id: string) => [...restaurantKeys.all, 'menu', id] as const,
+  favourites: () => [...restaurantKeys.all, 'favourites'] as const,
 };
 
 export const useGetAllRestaurants = () => {
@@ -98,6 +100,35 @@ export const useDeleteMenuItem = () => {
     onSuccess: (_, { restaurantId }) => {
       queryClient.invalidateQueries({ queryKey: restaurantKeys.menu(restaurantId) });
       queryClient.invalidateQueries({ queryKey: restaurantKeys.detail(restaurantId) });
+    },
+  });
+};
+
+export const useGetFavouriteRestaurants = () => {
+  return useQuery<RestaurantProfile[], Error>({
+    queryKey: restaurantKeys.favourites(),
+    queryFn: restaurantApi.getFavouriteRestaurants,
+  });
+};
+
+export const useAddFavouriteRestaurant = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, AddFavouriteRestaurantRequest>({
+    mutationFn: restaurantApi.addFavouriteRestaurant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: restaurantKeys.favourites() });
+    },
+  });
+};
+
+export const useRemoveFavouriteRestaurant = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, AddFavouriteRestaurantRequest>({
+    mutationFn: restaurantApi.removeFavouriteRestaurant,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: restaurantKeys.favourites() });
     },
   });
 };
