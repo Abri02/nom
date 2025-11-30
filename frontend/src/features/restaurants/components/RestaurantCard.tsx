@@ -3,25 +3,27 @@ import type { RestaurantUser } from "../types/restaurant.types";
 import { purple, pink, lightPurple, yellow } from "../../common/theme/colorScheme";
 import { useAddFavouriteRestaurant, useGetFavouriteRestaurantsById, useRemoveFavouriteRestaurant } from "../api/useRestaurantQueries";
 
+
 interface RestaurantCardProps {
   restaurant: RestaurantUser;
   onClick: () => void;
   isFavourite?: boolean;
 }
 
-export function RestaurantCard({ restaurant, onClick, isFavourite = false }: RestaurantCardProps) {
+export function RestaurantCard({ restaurant, onClick }: RestaurantCardProps) {
   const addFavourite = useAddFavouriteRestaurant();
   const removeFavourite = useRemoveFavouriteRestaurant();
-  const getFavById = useGetFavouriteRestaurantsById(restaurant.id);
-
+  const getFavById = useGetFavouriteRestaurantsById(restaurant.id); 
+  
+  const isFavourite = getFavById.data === true;
   const handleFavouriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFavourite) {
       removeFavourite.mutate({ restaurantId: restaurant.id });
-      isFavourite = false;
+      getFavById.refetch();
     } else {
       addFavourite.mutate({ restaurantId: restaurant.id });
-      isFavourite = true;
+      getFavById.refetch();
     }
   };
 
@@ -69,7 +71,7 @@ export function RestaurantCard({ restaurant, onClick, isFavourite = false }: Res
         border="none"
         opacity={addFavourite.isPending || removeFavourite.isPending ? 0.5 : 1}
       >
-        {getFavById ? "❤️" : "🤍"}
+        {isFavourite ? "❤️" : "🤍"} 
       </Box>
       <Text
         fontSize="2xl"
