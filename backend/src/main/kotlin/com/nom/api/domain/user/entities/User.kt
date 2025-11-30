@@ -17,6 +17,7 @@ data class User(
     val description: String? = null, //pl ahhoz hogy milyen konyha
     val isSuspended: Boolean = false,
     val cart: Cart?,
+    val favouriteRestaurants: MutableList<String> = mutableListOf(),
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {

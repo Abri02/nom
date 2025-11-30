@@ -31,7 +31,15 @@ class MongoUserRepository(
 
     override fun save(user: User): User {
         val document = userToDocument(user)
-        collection.insertOne(document)
+        val existing = collection.find(Filters.eq("_id", user.id)).firstOrNull()
+
+        if(existing == null){
+            collection.insertOne(document)
+        }
+        else{
+            collection.replaceOne(Filters.eq("_id", user.id), document)
+        }
+
         return user
     }
 
@@ -81,6 +89,8 @@ class MongoUserRepository(
             .append("street", user.Street)
             .append("streetNumber", user.StreetNumber)
             .append("createdAt", user.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+            .append("favouriteRestaurants",  user.favouriteRestaurants)
+
 
         return doc
     }
@@ -101,6 +111,13 @@ class MongoUserRepository(
             )
         }
 
+        val favouriteRestaurantsFromDoc: List<String> =
+            try {
+                doc.getList("favouriteRestaurants", String::class.java) ?: emptyList()
+            } catch (_: Exception) {
+                emptyList()
+            }
+
         return User(
             id = doc.getString("_id"),
             name = doc.getString("name"),
@@ -117,6 +134,7 @@ class MongoUserRepository(
             City = doc.getString("city"),
             Street = doc.getString("street"),
             StreetNumber = doc.getString("streetNumber"),
+            favouriteRestaurants = favouriteRestaurantsFromDoc.toMutableList()
         )
     }
 

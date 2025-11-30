@@ -5,8 +5,12 @@ import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.user.entities.UserRole
 import com.nom.api.domain.ports.`in`.CreateUserRequest
 import com.nom.api.domain.ports.`in`.CreateUserUseCase
+import com.nom.api.domain.user.ports.`in`.AddFavouriteRestaurantUseCase
+import com.nom.api.domain.user.ports.`in`.GetFavouriteRestaurantsUseCase
+import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -15,7 +19,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/users")
 class UserController(
-    private val createUserUseCase: CreateUserUseCase
+    private val createUserUseCase: CreateUserUseCase,
+    private val addFavouriteRestaurantUseCase: AddFavouriteRestaurantUseCase,
+    private val getFavouriteRestaurantsUseCase: GetFavouriteRestaurantsUseCase,
 ) {
 
     @PostMapping
@@ -68,6 +74,42 @@ class UserController(
                 .body(ErrorResponse("Internal server error"))
         }
     }
+
+    @PostMapping("/favourites")
+    fun addFavouriteRestaurant(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: AddFavouriteRestaurantRequest
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        return try {
+            addFavouriteRestaurantUseCase.addFavourite(
+                restaurantId = request.restaurantId,
+                userId = principal.id
+            )
+
+            val favourites = getFavouriteRestaurantsUseCase.getFavourites(principal.id)
+            ResponseEntity.ok(favourites)
+
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+    }
+
+    @GetMapping("/favourites/restaurants")
+    fun getFavouriteRestaurants(
+        @AuthenticationPrincipal user: AuthUser?
+    ): ResponseEntity<List<RestaurantProfile>> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        val favourites = getFavouriteRestaurantsUseCase.getFavourites(principal.id)
+        return ResponseEntity.ok(favourites)
+    }
+
 }
 
 data class CreateUserHttpRequest(
@@ -99,4 +141,8 @@ data class UserResponse(
 
 data class ErrorResponse(
     val message: String
+)
+
+data class AddFavouriteRestaurantRequest(
+    val restaurantId: String
 )

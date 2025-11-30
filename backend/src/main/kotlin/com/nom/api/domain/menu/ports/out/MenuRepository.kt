@@ -34,4 +34,6 @@ interface MenuRepository {
     fun findAllRestaurants(): List<RestaurantProfile>
 
     fun findByRestaurantId(restaurantId: String): Menu?
+
+    fun findAllRestaurantByIdList(list: List<String>) : List<RestaurantProfile>
 }

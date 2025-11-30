@@ -121,6 +121,17 @@ class MongoMenuRepository(
         return getMenu(restaurantId)
     }
 
+    override fun findAllRestaurantByIdList(list: List<String>): List<RestaurantProfile> {
+        if (list.isEmpty()) {
+            return emptyList()
+        }
+
+        return collection
+            .find(Filters.`in`("_id", list))
+            .map { doc -> documentToRestaurantProfile(doc) }
+            .toList()
+    }
+
     // ---------- Mapping függvények ----------
 
     private fun restaurantProfileToDocument(profile: RestaurantProfile): Document =
