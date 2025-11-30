@@ -77,8 +77,21 @@ class CreateOrderUseCaseImpl(
             null
         }
 
+        val restaurant = userRepository.findById(restaurantId)
+            ?: throw IllegalStateException("User not found: $userId")
+        val restaurantAddress = restaurant.toAddress()
+
+        val restaurantCoordinates = try {
+            geocodingService.geocode(restaurantAddress)
+        } catch (ex: Exception) {
+            // ide tehetsz logger-t is
+            null
+        }
+
+
+
         val deliveryAddress = baseAddress.copy(coordinates = coordinates)
-        val currentLocation = coordinates
+        val currentLocation = restaurantCoordinates
 
         val order = Order(
             id = UUID.randomUUID().toString(),

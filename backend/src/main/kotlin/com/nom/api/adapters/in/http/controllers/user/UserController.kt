@@ -5,11 +5,7 @@ import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.user.entities.UserRole
 import com.nom.api.domain.ports.`in`.CreateUserRequest
 import com.nom.api.domain.ports.`in`.CreateUserUseCase
-import com.nom.api.domain.user.ports.`in`.AddFavouriteRestaurantUseCase
-import com.nom.api.domain.user.ports.`in`.GetFavouriteRestaurantsUseCase
-import com.nom.api.domain.user.ports.`in`.RemoveFavouriteRestaurantUseCase
-import com.nom.api.domain.user.ports.`in`.UpdateUserRequest
-import com.nom.api.domain.user.ports.`in`.UpdateUserUseCase
+import com.nom.api.domain.user.ports.`in`.*
 import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,6 +23,7 @@ class UserController(
     private val getFavouriteRestaurantsUseCase: GetFavouriteRestaurantsUseCase,
     private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
+    private val isFavouriteUseCase: IsFavouriteUseCase
 ) {
 
     @PostMapping
@@ -173,6 +170,30 @@ class UserController(
         }
     }
 
+    @GetMapping("/favourites")
+    fun isFavourite(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestParam restaurantId: String
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        return try {
+            val result = isFavouriteUseCase.isFavourite(
+                restaurantId = restaurantId,
+                userId = principal.id
+            )
+
+            ResponseEntity.ok(IsFavouriteResponse(isFavourite = result))
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+    }
+
 }
 
 data class CreateUserHttpRequest(
@@ -209,4 +230,8 @@ data class ErrorResponse(
 
 data class AddFavouriteRestaurantRequest(
     val restaurantId: String
+)
+
+data class IsFavouriteResponse(
+    val isFavourite: Boolean
 )
