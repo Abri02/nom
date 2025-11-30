@@ -65,12 +65,11 @@ class OrderController(
     @GetMapping("/restaurant")
     fun getOrdersForRestaurantByStatus(
         @AuthenticationPrincipal user: AuthUser?,
-        @RequestBody request: OrderStatusRequest
+        @RequestParam orderStatus: OrderStatus
     ): ResponseEntity<List<OrderDetail>> {
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-        // Feltételezzük, hogy principal.id = restaurantId
-        val orders = getOrderByRestaurantAndStatusUseCase.getOrder(principal.id, request.orderStatus)
+        val orders = getOrderByRestaurantAndStatusUseCase.getOrder(principal.id, orderStatus)
         return ResponseEntity.ok(orders)
     }
 
