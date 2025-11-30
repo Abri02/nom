@@ -92,16 +92,17 @@ export function RegisterForm({ userType }: RegisterFormProps) {
 
       toaster.create({
         title: "Sikeres regisztráció!",
-        description: "Üdvözlünk a NOM-on!",
+        description: "Most már bejelentkezhetsz a fiókodba.",
         type: "success",
         duration: 3000,
       });
 
-      navigate("/home");
+      navigate("/login");
     } catch (err) {
       toaster.create({
         title: "Regisztráció sikertelen",
-        description: err instanceof Error ? err.message : "Kérjük, próbáld újra később",
+        description:
+          err instanceof Error ? err.message : "Kérjük, próbáld újra később",
         type: "error",
         duration: 5000,
       });
@@ -245,11 +246,7 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     isInvalid={!!errors.phoneNumber}
                   />
                   {errors.phoneNumber && (
-                    <Field.ErrorText
-                      fontSize="sm"
-                      color="red.500"
-                      mt="0.5rem"
-                    >
+                    <Field.ErrorText fontSize="sm" color="red.500" mt="0.5rem">
                       {errors.phoneNumber.message}
                     </Field.ErrorText>
                   )}
@@ -269,11 +266,7 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     isInvalid={!!errors.street}
                   />
                   {errors.street && (
-                    <Field.ErrorText
-                      fontSize="sm"
-                      color="red.500"
-                      mt="0.5rem"
-                    >
+                    <Field.ErrorText fontSize="sm" color="red.500" mt="0.5rem">
                       {errors.street.message}
                     </Field.ErrorText>
                   )}
@@ -292,11 +285,7 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     isInvalid={!!errors.streetNumber}
                   />
                   {errors.streetNumber && (
-                    <Field.ErrorText
-                      fontSize="sm"
-                      color="red.500"
-                      mt="0.5rem"
-                    >
+                    <Field.ErrorText fontSize="sm" color="red.500" mt="0.5rem">
                       {errors.streetNumber.message}
                     </Field.ErrorText>
                   )}
@@ -315,11 +304,7 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     isInvalid={!!errors.city}
                   />
                   {errors.city && (
-                    <Field.ErrorText
-                      fontSize="sm"
-                      color="red.500"
-                      mt="0.5rem"
-                    >
+                    <Field.ErrorText fontSize="sm" color="red.500" mt="0.5rem">
                       {errors.city.message}
                     </Field.ErrorText>
                   )}
@@ -342,11 +327,7 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     isInvalid={!!errors.zipCode}
                   />
                   {errors.zipCode && (
-                    <Field.ErrorText
-                      fontSize="sm"
-                      color="red.500"
-                      mt="0.5rem"
-                    >
+                    <Field.ErrorText fontSize="sm" color="red.500" mt="0.5rem">
                       {errors.zipCode.message}
                     </Field.ErrorText>
                   )}
@@ -355,7 +336,11 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                 {userType === "restaurant" && (
                   <>
                     <Field.Root invalid={!!errors.startTime}>
-                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                      <Field.Label
+                        fontWeight="700"
+                        color={yellow}
+                        fontSize="sm"
+                      >
                         Nyitás
                       </Field.Label>
                       <NomInputs
@@ -378,7 +363,11 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                     </Field.Root>
 
                     <Field.Root invalid={!!errors.endTime}>
-                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                      <Field.Label
+                        fontWeight="700"
+                        color={yellow}
+                        fontSize="sm"
+                      >
                         Zárás
                       </Field.Label>
                       <NomInputs

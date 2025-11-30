@@ -38,20 +38,16 @@ export const OrdersPage = () => {
   if (error) {
     return (
       <Container maxW="container.xl" py={8}>
-        <Box
-          bg="red.50"
-          borderColor="red.200"
-          borderWidth={1}
-          borderRadius="md"
-          p={4}
-        >
-          <Heading size="sm" color="red.800" mb={2}>
-            Error loading orders
-          </Heading>
-          <Text color="red.700">
-            {error instanceof Error ? error.message : "Failed to load your orders. Please try again later."}
-          </Text>
-        </Box>
+        <VStack gap={6} align="stretch">
+          <Heading size="xl">My Orders</Heading>
+          <Center py={12}>
+            <VStack gap={2}>
+              <Text fontSize="lg" color="gray.600">
+                You don't have any orders
+              </Text>
+            </VStack>
+          </Center>
+        </VStack>
       </Container>
     );
   }

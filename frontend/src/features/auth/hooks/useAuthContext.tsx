@@ -88,34 +88,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         throw new Error("Registration failed - no response");
       }
 
-      // Warn if no token is provided
-      if (!response.token) {
-        console.warn("No token received in registration response");
-      }
-
-      const newUser: User = {
-        id: response.id,
-        email: response.email || email,
-        role: response.role || role,
-      };
-
-      // Store token if available
-      if (response.token) {
-        localStorage.setItem("authToken", response.token);
-        console.log("Token stored in localStorage");
-
-        // Verify storage
-        const storedToken = localStorage.getItem("authToken");
-        console.log("Verification - Token retrieved:", storedToken ? `${storedToken.substring(0, 20)}...` : 'null');
-        console.log("Verification - Token matches:", storedToken === response.token);
-      } else {
-        console.warn("No token to store - authentication may not work");
-      }
-
-      localStorage.setItem("user", JSON.stringify(newUser));
-
-      setUser(newUser);
-      setIsLoggedIn(true);
+      // Registration successful - user should now login
+      console.log("Registration successful, please login");
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Registration failed";
@@ -151,15 +125,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         role: response.role,
       };
 
-      // Store token if available
       if (response.token) {
         localStorage.setItem("authToken", response.token);
         console.log("Token stored in localStorage");
 
-        // Verify storage
         const storedToken = localStorage.getItem("authToken");
-        console.log("Verification - Token retrieved:", storedToken ? `${storedToken.substring(0, 20)}...` : 'null');
-        console.log("Verification - Token matches:", storedToken === response.token);
+        console.log(
+          "Verification - Token retrieved:",
+          storedToken ? `${storedToken.substring(0, 20)}...` : "null"
+        );
+        console.log(
+          "Verification - Token matches:",
+          storedToken === response.token
+        );
       } else {
         console.warn("No token to store - authentication may not work");
       }
