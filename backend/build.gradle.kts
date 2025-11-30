@@ -47,6 +47,7 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.20.0")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 }
 
 kotlin {

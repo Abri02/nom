@@ -27,19 +27,19 @@ class AuthController(
         try {
             val user = userRepository.findByEmail(request.email)
                 ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponse(null, null, "Invalid credentials",  UserRole.UNKNOWN, null),)
+                    .body(AuthResponse(null, null, "Invalid credentials",  UserRole.UNKNOWN, null, null),)
 
             if (!passwordEncoder.matches(request.password, user.passwordHash)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponse(null, null, "Invalid credentials", UserRole.UNKNOWN, null))
+                    .body(AuthResponse(null, null, "Invalid credentials", UserRole.UNKNOWN, null, null))
             }
 
             val token = jwtUtil.generateToken(user.id, user.email)
 
-            return ResponseEntity.ok(AuthResponse(token, user.email, "Login successful", user.role, user.id))
+            return ResponseEntity.ok(AuthResponse(token, user.email, "Login successful", user.role, user.id, user.name))
         } catch (e: Exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(AuthResponse(null, null, "Login failed: ${e.message}", UserRole.UNKNOWN, null))
+                .body(AuthResponse(null, null, "Login failed: ${e.message}", UserRole.UNKNOWN, null, null))
         }
     }
 }
@@ -63,4 +63,5 @@ data class AuthResponse(
     val message: String,
     val role: UserRole,
     val id: String?,
+    val name: String?
 )
