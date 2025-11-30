@@ -36,4 +36,6 @@ interface MenuRepository {
     fun findByRestaurantId(restaurantId: String): Menu?
 
     fun findAllRestaurantByIdList(list: List<String>) : List<RestaurantProfile>
+
+    fun removeMenuItem(restaurantId: String, menuItemId: String)
 }

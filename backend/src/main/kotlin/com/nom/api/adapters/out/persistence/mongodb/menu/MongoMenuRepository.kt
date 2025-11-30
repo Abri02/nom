@@ -132,6 +132,27 @@ class MongoMenuRepository(
             .toList()
     }
 
+    override fun removeMenuItem(restaurantId: String, menuItemId: String) {
+        val filter = Filters.eq("_id", restaurantId)
+
+        val update = Updates.pull(
+            "menu.menuItems",
+            Document("id", menuItemId)
+        )
+
+        val result = collection.updateOne(filter, update)
+
+        if (result.matchedCount == 0L) {
+            // ilyen étterem nincs
+            throw IllegalStateException("Restaurant with id $restaurantId not found")
+        }
+
+        if (result.modifiedCount == 0L) {
+            // étterem megvan, de ilyen menuItem nincs a menüben
+            throw IllegalStateException("Menu item with id $menuItemId not found for restaurant $restaurantId")
+        }
+    }
+
     // ---------- Mapping függvények ----------
 
     private fun restaurantProfileToDocument(profile: RestaurantProfile): Document =

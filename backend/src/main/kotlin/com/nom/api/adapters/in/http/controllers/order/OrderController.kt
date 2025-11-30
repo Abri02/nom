@@ -27,6 +27,7 @@ class OrderController(
     private val prepareOrderByRestaurantUseCase: PrepareOrderByRestaurantUseCase,
     private val startDeliveryByCourierUseCase: StartDeliveryByCourierUseCase,
     private val finishDeliveryByCourierUseCase: FinishDeliveryByCourierUseCase,
+    private val updateOrderByAdminUseCase: UpdateOrderByAdminUseCase
 ) {
 
     @PostMapping
@@ -156,8 +157,4 @@ class OrderController(
 
 data class OrderIdRequest(
     val orderId: String
-)
-
-data class OrderStatusRequest(
-    val orderStatus: OrderStatus
 )
