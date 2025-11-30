@@ -1,5 +1,6 @@
 package com.nom.api.application.usecases.order
 
+import com.nom.api.adapters.`in`.http.controllers.UserResponse
 import com.nom.api.domain.cart.ports.`in`.ClearCartUseCase
 import com.nom.api.domain.cart.ports.out.CartRepository
 import com.nom.api.domain.menu.entities.Menu
@@ -11,6 +12,8 @@ import com.nom.api.domain.order.ports.`in`.CreateOrderUseCase
 import com.nom.api.domain.order.ports.`in`.OrderDetail
 import com.nom.api.domain.order.ports.out.OrderRepository
 import com.nom.api.domain.payment.ports.out.PaymentGateway // <-- Fontos: Az új port
+import com.nom.api.domain.ports.out.UserRepository
+import com.nom.api.geoCode.GeocodingService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -22,7 +25,9 @@ class CreateOrderUseCaseImpl(
     private val orderRepository: OrderRepository,
     private val menuRepository: MenuRepository,
     private val cartRepository: CartRepository,
-    private val clearCartUseCase: ClearCartUseCase
+    private val clearCartUseCase: ClearCartUseCase,
+    private val userRepository: UserRepository,
+    private val geocodingService: GeocodingService
 ) : CreateOrderUseCase {
 
     override fun createOrder(userId: String): OrderDetail {
@@ -61,13 +66,27 @@ class CreateOrderUseCaseImpl(
             totalPrice = totalPrice,
         )
 
+        val user = userRepository.findById(userId)
+            ?: throw IllegalStateException("User not found: $userId")
+        val baseAddress = user.toAddress()
+
+        val coordinates = try {
+            geocodingService.geocode(baseAddress)
+        } catch (ex: Exception) {
+            // ide tehetsz logger-t is
+            null
+        }
+
+        val deliveryAddress = baseAddress.copy(coordinates = coordinates)
+        val currentLocation = coordinates
+
         val order = Order(
             id = UUID.randomUUID().toString(),
             customerId = userId,
             restaurantId = restaurantId,
             courierId = null,
-            deliveryAddress = null, // TODO Change it to api call
-            currentLocation = null,
+            deliveryAddress = deliveryAddress,
+            currentLocation = currentLocation,
             totalPrice = totalPrice,
             status = OrderStatus.NEW,
             cart = cartSnapshot
@@ -84,8 +103,8 @@ class CreateOrderUseCaseImpl(
             restaurantName = restaurantProfile.restaurantName,
             courierId = saved.courierId,
             items = cart.items.toMutableList(),
-            deliveryAddress = null, // TODO Change it to api call
-            currentLocation = saved.currentLocation,
+            deliveryAddress = deliveryAddress,
+            currentLocation = currentLocation,
             totalPrice = saved.totalPrice,
             status = saved.status,
             createdAt = saved.createdAt,

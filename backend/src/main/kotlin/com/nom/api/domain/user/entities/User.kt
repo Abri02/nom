@@ -1,6 +1,7 @@
 package com.nom.api.domain.user.entities
 
 import com.nom.api.domain.cart.entities.Cart
+import com.nom.api.domain.order.entities.Address
 import java.time.LocalDateTime
 
 data class User(
@@ -26,6 +27,16 @@ data class User(
         require(email.contains("@")) { "Invalid email format" }
         require(phoneNumber.isNotBlank()) { "Phone number cannot be blank" }
 
+    }
+
+    fun toAddress(): Address {
+        return Address(
+            houseNumber = StreetNumber.toIntOrNull()
+                ?: throw IllegalStateException("Invalid house number for user $id: $StreetNumber"),
+            street = Street,
+            city = City,
+            postalCode = ZipCode
+        )
     }
 }
 
