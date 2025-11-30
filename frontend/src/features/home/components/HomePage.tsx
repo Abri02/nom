@@ -1,8 +1,6 @@
 import {
   Box,
-  Button,
   Container,
-  Flex,
   Text,
   VStack,
   HStack,
@@ -15,13 +13,9 @@ import { useAuth } from "../../auth/hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   Utensils,
-  Truck,
   Clock,
   Star,
-  MapPin,
   CreditCard,
-  Heart,
-  Users,
 } from "lucide-react";
 import { purple, pink, yellow } from "../../common/theme/colorScheme";
 import { NomButtons } from "../../common/components/NomButton";
@@ -30,6 +24,7 @@ export function HomePage() {
   const { user, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const isMobile = useBreakpointValue({ base: true, md: false });
+  
 
   const features = [
     {
@@ -130,7 +125,7 @@ export function HomePage() {
             {isLoggedIn ? (
               <VStack gap="1rem">
                 <Text fontSize="lg" color={yellow} fontWeight="600">
-                  Üdvözlünk vissza, {user?.name}! 👋
+                  Üdvözlünk vissza, {user?.email}! 👋
                 </Text>
                 <HStack gap="1rem">
                   <NomButtons
@@ -262,7 +257,6 @@ export function HomePage() {
         </Box>
       )}
 
-      {/* Stats Section */}
       <Container maxW="7xl" py="4rem">
         <Grid
           templateColumns={isMobile ? "1fr" : "repeat(3, 1fr)"}
@@ -296,7 +290,6 @@ export function HomePage() {
         </Grid>
       </Container>
 
-      {/* CTA Section */}
       {!isLoggedIn && (
         <Box bg={purple} py="4rem">
           <Container maxW="4xl">

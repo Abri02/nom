@@ -9,6 +9,7 @@ import type {
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
   AddFavouriteRestaurantRequest,
+  GetFavouriteRestaurantRequest,
 } from '../types/restaurant.types';
 
 // Query Keys
@@ -108,6 +109,14 @@ export const useGetFavouriteRestaurants = () => {
   return useQuery<RestaurantProfile[], Error>({
     queryKey: restaurantKeys.favourites(),
     queryFn: restaurantApi.getFavouriteRestaurants,
+  });
+};
+
+export const useGetFavouriteRestaurantsById = (restaurantId: string) => {
+  return useQuery<boolean, Error>({
+    queryKey: [...restaurantKeys.favourites(), restaurantId],
+    queryFn: () => restaurantApi.getFavouriteRestaurantById(restaurantId),
+    enabled: !!restaurantId, 
   });
 };
 

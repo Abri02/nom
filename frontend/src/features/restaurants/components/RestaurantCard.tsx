@@ -1,7 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
 import type { RestaurantUser } from "../types/restaurant.types";
-import { purple, pink, lightPurple } from "../../common/theme/colorScheme";
-import { useAddFavouriteRestaurant, useRemoveFavouriteRestaurant } from "../api/useRestaurantQueries";
+import { purple, pink, lightPurple, yellow } from "../../common/theme/colorScheme";
+import { useAddFavouriteRestaurant, useGetFavouriteRestaurantsById, useRemoveFavouriteRestaurant } from "../api/useRestaurantQueries";
 
 interface RestaurantCardProps {
   restaurant: RestaurantUser;
@@ -12,13 +12,16 @@ interface RestaurantCardProps {
 export function RestaurantCard({ restaurant, onClick, isFavourite = false }: RestaurantCardProps) {
   const addFavourite = useAddFavouriteRestaurant();
   const removeFavourite = useRemoveFavouriteRestaurant();
+  const getFavById = useGetFavouriteRestaurantsById(restaurant.id);
 
   const handleFavouriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFavourite) {
       removeFavourite.mutate({ restaurantId: restaurant.id });
+      isFavourite = false;
     } else {
       addFavourite.mutate({ restaurantId: restaurant.id });
+      isFavourite = true;
     }
   };
 
@@ -28,7 +31,7 @@ export function RestaurantCard({ restaurant, onClick, isFavourite = false }: Res
       borderColor={pink}
       borderRadius="xl"
       p={6}
-      bg="gray.50"
+      bg={`${purple}90`}
       boxShadow="lg"
       position="relative"
       overflow="hidden"
@@ -53,6 +56,7 @@ export function RestaurantCard({ restaurant, onClick, isFavourite = false }: Res
       <Box
         as="button"
         aria-label="Toggle favourite"
+        
         position="absolute"
         top={4}
         right={4}
@@ -65,12 +69,12 @@ export function RestaurantCard({ restaurant, onClick, isFavourite = false }: Res
         border="none"
         opacity={addFavourite.isPending || removeFavourite.isPending ? 0.5 : 1}
       >
-        {isFavourite ? "❤️" : "🤍"}
+        {getFavById ? "❤️" : "🤍"}
       </Box>
       <Text
         fontSize="2xl"
         fontWeight="bold"
-        color={purple}
+        color={yellow}
         mb={2}
         letterSpacing="tight"
       >
@@ -81,7 +85,7 @@ export function RestaurantCard({ restaurant, onClick, isFavourite = false }: Res
           🕒 {restaurant.description}
         </Text>
       )}
-      <Text fontSize="sm" color={lightPurple} mt={2}>
+      <Text fontSize="sm" color={yellow} mt={2}>
         📧 {restaurant.email}
       </Text>
     </Box>

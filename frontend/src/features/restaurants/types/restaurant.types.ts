@@ -7,6 +7,7 @@ export interface RestaurantUser {
   description?: string;
   isSuspended: boolean;
   createdAt: string;
+  image?: string;
 }
 
 export interface RestaurantProfile {
