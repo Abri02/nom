@@ -70,10 +70,13 @@ class CreateOrderUseCaseImpl(
             ?: throw IllegalStateException("User not found: $userId")
         val baseAddress = user.toAddress()
 
-        val coordinates = try {
-            geocodingService.geocode(baseAddress)
-        } catch (ex: Exception) {
-            // ide tehetsz logger-t is
+        val coordinates = if (baseAddress != null) {
+            try {
+                geocodingService.geocode(baseAddress)
+            } catch (ex: Exception) {
+                null
+            }
+        } else {
             null
         }
 
@@ -81,16 +84,20 @@ class CreateOrderUseCaseImpl(
             ?: throw IllegalStateException("User not found: $userId")
         val restaurantAddress = restaurant.toAddress()
 
-        val restaurantCoordinates = try {
-            geocodingService.geocode(restaurantAddress)
-        } catch (ex: Exception) {
-            // ide tehetsz logger-t is
+        val restaurantCoordinates = if (restaurantAddress != null) {
+            try {
+                geocodingService.geocode(restaurantAddress)
+            } catch (ex: Exception) {
+                // logger.warn("Failed to geocode restaurant address for $restaurantId", ex)
+                null
+            }
+        } else {
             null
         }
 
 
 
-        val deliveryAddress = baseAddress.copy(coordinates = coordinates)
+        val deliveryAddress = baseAddress?.copy(coordinates = coordinates)
         val currentLocation = restaurantCoordinates
 
         val order = Order(
