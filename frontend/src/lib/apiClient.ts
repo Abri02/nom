@@ -14,8 +14,16 @@ export const createApiClient = (baseURL: string = API_BASE_URL) => {
   client.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem("authToken");
+      console.log(`[API Interceptor] Checking for token...`);
+      console.log(`[API Interceptor] Token from localStorage:`, token ? `${token.substring(0, 20)}...` : 'null');
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url} - Token attached`);
+        console.log(`[API Request] Authorization header:`, config.headers.Authorization.substring(0, 30) + '...');
+      } else {
+        console.warn(`[API Request] ${config.method?.toUpperCase()} ${config.url} - No token found in localStorage`);
+        console.warn(`[API Request] localStorage keys:`, Object.keys(localStorage));
       }
       return config;
     },

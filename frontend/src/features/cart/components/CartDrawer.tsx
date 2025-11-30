@@ -15,6 +15,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCartContext";
 import { purple, pink, yellow } from "../../common/theme/colorScheme";
 
@@ -24,6 +25,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const navigate = useNavigate();
   const {
     items,
     removeItem,
@@ -32,6 +34,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     totalPrice,
     totalItems,
   } = useCart();
+
+  const handleCheckout = () => {
+    onClose();
+    navigate("/checkout");
+  };
 
   return (
     <DrawerRoot
@@ -167,6 +174,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 bg={purple}
                 color="white"
                 _hover={{ bg: pink }}
+                onClick={handleCheckout}
               >
                 Checkout
               </Button>

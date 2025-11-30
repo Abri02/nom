@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderApi } from "./orderApi";
-import type { CreateOrderRequest } from "../types/order.types";
+import type { OrderStatus } from "../types/order.types";
 
 export const orderQueryKeys = {
   all: ["orders"] as const,
@@ -14,7 +14,10 @@ export const orderQueryKeys = {
 export const useUserOrders = () => {
   return useQuery({
     queryKey: orderQueryKeys.list(),
-    queryFn: () => orderApi.getUserOrders(),
+    queryFn: async () => {
+      const order = await orderApi.getCustomerOrder();
+      return order ? [order] : [];
+    },
   });
 };
 
@@ -29,7 +32,7 @@ export const useOrderDetails = (orderId: string, enabled = true) => {
 export const useOrderTracking = (orderId: string, enabled = true) => {
   return useQuery({
     queryKey: orderQueryKeys.tracking(orderId),
-    queryFn: () => orderApi.getOrderTracking(orderId),
+    queryFn: () => orderApi.trackOrder(orderId),
     enabled,
     refetchInterval: 5000, // Poll every 5 seconds for live tracking
   });
@@ -39,7 +42,7 @@ export const useCreateOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateOrderRequest) => orderApi.createOrder(data),
+    mutationFn: () => orderApi.placeOrder(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.list() });
     },
@@ -50,7 +53,7 @@ export const useCancelOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.cancelOrder(orderId),
+    mutationFn: (orderId: string) => orderApi.declineOrder({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },
@@ -58,11 +61,35 @@ export const useCancelOrder = () => {
 };
 
 // Restaurant-specific hooks
-export const useRestaurantOrders = (restaurantId: string) => {
+export const useRestaurantOrders = (status: OrderStatus) => {
   return useQuery({
-    queryKey: [...orderQueryKeys.all, "restaurant", restaurantId],
-    queryFn: () => orderApi.getRestaurantOrders(restaurantId),
-    enabled: !!restaurantId,
+    queryKey: [...orderQueryKeys.all, "restaurant", status],
+    queryFn: () =>
+      orderApi.getOrdersForRestaurantByStatus({ orderStatus: status }),
+    enabled: !!status,
+  });
+};
+
+export const useAllRestaurantOrders = () => {
+  return useQuery({
+    queryKey: [...orderQueryKeys.all, "restaurant", "all"],
+    queryFn: async () => {
+      // Fetch orders for all relevant statuses and combine them
+      const statuses: OrderStatus[] = [
+        "NEW",
+        "PREPARING",
+        "READY",
+        "ON_DELIVERY",
+        "DELIVERED",
+        "CANCELLED",
+      ];
+      const allOrders = await Promise.all(
+        statuses.map((status) =>
+          orderApi.getOrdersForRestaurantByStatus({ orderStatus: status })
+        )
+      );
+      return allOrders.flat();
+    },
   });
 };
 
@@ -70,7 +97,7 @@ export const useAcceptOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.acceptOrder(orderId),
+    mutationFn: (orderId: string) => orderApi.acceptOrder({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },
@@ -81,7 +108,7 @@ export const useDeclineOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.declineOrder(orderId),
+    mutationFn: (orderId: string) => orderApi.declineOrder({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },
@@ -92,7 +119,7 @@ export const useMarkOrderReady = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.markOrderReady(orderId),
+    mutationFn: (orderId: string) => orderApi.prepareOrder({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },
@@ -100,11 +127,10 @@ export const useMarkOrderReady = () => {
 };
 
 // Courier-specific hooks
-export const useCourierDeliveries = (courierId: string) => {
+export const useCourierDeliveries = () => {
   return useQuery({
-    queryKey: [...orderQueryKeys.all, "courier", courierId],
-    queryFn: () => orderApi.getCourierDeliveries(courierId),
-    enabled: !!courierId,
+    queryKey: [...orderQueryKeys.all, "courier"],
+    queryFn: () => orderApi.getOrdersForCourier(),
   });
 };
 
@@ -112,7 +138,7 @@ export const usePickupOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.pickupOrder(orderId),
+    mutationFn: (orderId: string) => orderApi.startDelivery({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },
@@ -123,7 +149,7 @@ export const useDeliverOrder = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (orderId: string) => orderApi.deliverOrder(orderId),
+    mutationFn: (orderId: string) => orderApi.finishDelivery({ orderId }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
     },

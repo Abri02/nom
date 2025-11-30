@@ -12,6 +12,7 @@ import { MyRestaurantPage } from "./features/restaurants/components/pages/MyRest
 import { OrdersPage } from "./features/orders/components/pages/OrdersPage";
 import { ManageOrdersPage } from "./features/orders/components/pages/ManageOrdersPage";
 import { CourierDeliveriesPage } from "./features/orders/components/pages/CourierDeliveriesPage";
+import { CheckoutPage } from "./features/orders/components/pages/CheckoutPage";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/restaurant/:id" element={<MenuPage />} />
           <Route path="/my-restaurant" element={<MyRestaurantPage />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/manage-orders" element={<ManageOrdersPage />} />
           <Route path="/deliveries" element={<CourierDeliveriesPage />} />
           <Route path="/" element={<Navigate to="/login" replace />} />

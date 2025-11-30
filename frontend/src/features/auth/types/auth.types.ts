@@ -23,6 +23,10 @@ export interface RegisterRequest {
   email: string;
   password: string;
   phoneNumber: string;
+  zipCode: string;
+  city: string;
+  street: string;
+  streetNumber: string;
   role: string;
   restaurantProfile?: RestaurantProfile;
 }

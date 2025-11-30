@@ -9,10 +9,11 @@ import {
   Button,
   Separator,
 } from "@chakra-ui/react";
-import type { Order, OrderStatus } from "../types/order.types";
+import type { OrderDetail, OrderStatus } from "../types/order.types";
+import { yellow, purple, pink } from "../../common/theme/colorScheme";
 
 interface RestaurantOrderCardProps {
-  order: Order;
+  order: OrderDetail;
   onAccept?: (orderId: string) => void;
   onDecline?: (orderId: string) => void;
   onMarkReady?: (orderId: string) => void;
@@ -25,11 +26,10 @@ interface StatusStyle {
 
 const getStatusStyle = (status: OrderStatus): StatusStyle => {
   const styles: Record<OrderStatus, StatusStyle> = {
-    PENDING: { bg: "#E2E8F0", color: "#2D3748" }, // Gray
-    CONFIRMED: { bg: "#BEE3F8", color: "#2C5282" }, // Blue
+    NEW: { bg: "#BEE3F8", color: "#2C5282" }, // Blue
     PREPARING: { bg: "#FED7AA", color: "#C05621" }, // Orange
     READY: { bg: "#D6BCFA", color: "#6B46C1" }, // Purple
-    OUT_FOR_DELIVERY: { bg: "#B2F5EA", color: "#00718F" }, // Cyan
+    ON_DELIVERY: { bg: "#B2F5EA", color: "#00718F" }, // Cyan
     DELIVERED: { bg: "#C6F6D5", color: "#276749" }, // Green
     CANCELLED: { bg: "#FED7D7", color: "#C53030" }, // Red
   };
@@ -46,9 +46,9 @@ export const RestaurantOrderCard = ({
   onDecline,
   onMarkReady,
 }: RestaurantOrderCardProps) => {
-  const isPending = order.status === "PENDING";
-  const isConfirmed = order.status === "CONFIRMED";
+  const isNew = order.status === "NEW";
   const isPreparing = order.status === "PREPARING";
+  const isReady = order.status === "READY";
 
   return (
     <Card.Root width="100%" boxShadow="md">
@@ -56,8 +56,10 @@ export const RestaurantOrderCard = ({
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between">
             <Box>
-              <Heading size="md">Order #{order.id.slice(0, 8)}</Heading>
-              <Text fontSize="sm" color="gray.600" mt={1}>
+              <Heading size="md" color={"black"}>
+                Order #{order.id.slice(0, 8)}
+              </Heading>
+              <Text fontSize="sm" color={purple} mt={1} fontWeight="medium">
                 {new Date(order.createdAt).toLocaleString()}
               </Text>
             </Box>
@@ -76,26 +78,31 @@ export const RestaurantOrderCard = ({
 
           <Separator />
 
-          <Box>
-            <Text fontSize="sm" color="gray.600" mb={1}>
-              Delivery Address:
-            </Text>
-            <Text fontWeight="medium">{order.deliveryAddress}</Text>
-          </Box>
-
-          <Separator />
+          {order.deliveryAddress && (
+            <>
+              <Box>
+                <Text fontSize="sm" color={yellow} mb={1} fontWeight="semibold">
+                  Delivery Address:
+                </Text>
+                <Text fontWeight="medium" color="black">
+                  {order.deliveryAddress.street}{" "}
+                  {order.deliveryAddress.houseNumber},{" "}
+                  {order.deliveryAddress.city}{" "}
+                  {order.deliveryAddress.postalCode}
+                </Text>
+              </Box>
+              <Separator />
+            </>
+          )}
 
           <VStack align="stretch" gap={2}>
-            <Text fontWeight="semibold" fontSize="sm" color="gray.700">
-              Items:
+            <Text fontWeight="semibold" fontSize="sm" color={"black"}>
+              Items: {order.items.length} item(s)
             </Text>
             {order.items.map((item, index) => (
               <HStack key={index} justify="space-between">
-                <Text>
-                  {item.quantity}x {item.menuItemName}
-                </Text>
-                <Text fontWeight="medium">
-                  {(item.price * item.quantity).toLocaleString()} HUF
+                <Text color="black">
+                  {item.quantity}x Menu Item (ID: {item.menuItemId.slice(0, 8)})
                 </Text>
               </HStack>
             ))}
@@ -104,21 +111,23 @@ export const RestaurantOrderCard = ({
           <Separator />
 
           <HStack justify="space-between">
-            <Text fontWeight="bold" fontSize="lg">
+            <Text fontWeight="bold" fontSize="lg" color={purple}>
               Total
             </Text>
-            <Text fontWeight="bold" fontSize="xl" color="purple.600">
+            <Text fontWeight="bold" fontSize="xl" color={yellow}>
               {order.totalPrice.toLocaleString()} HUF
             </Text>
           </HStack>
 
           {/* Action Buttons */}
-          {isPending && (
+          {isNew && (
             <HStack gap={2} mt={2}>
               <Button
                 onClick={() => onAccept?.(order.id)}
                 size="md"
-                colorScheme="green"
+                bg={purple}
+                color="white"
+                _hover={{ bg: pink }}
                 flex={1}
               >
                 Accept Order
@@ -126,8 +135,11 @@ export const RestaurantOrderCard = ({
               <Button
                 onClick={() => onDecline?.(order.id)}
                 size="md"
-                colorScheme="red"
+                bg={yellow}
+                color="black"
+                _hover={{ opacity: 0.8 }}
                 variant="outline"
+                borderColor={yellow}
                 flex={1}
               >
                 Decline
@@ -135,15 +147,17 @@ export const RestaurantOrderCard = ({
             </HStack>
           )}
 
-          {(isConfirmed || isPreparing) && (
+          {(isPreparing || isReady) && (
             <Button
               onClick={() => onMarkReady?.(order.id)}
               size="md"
-              colorScheme="purple"
+              bg={purple}
+              color="white"
+              _hover={{ bg: pink }}
               width="100%"
               mt={2}
             >
-              Mark as Out for Delivery
+              Mark as Ready for Pickup
             </Button>
           )}
         </VStack>

@@ -9,22 +9,17 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import {
-  useRestaurantOrders,
+  useAllRestaurantOrders,
   useAcceptOrder,
   useDeclineOrder,
   useMarkOrderReady,
 } from "../../api/useOrderQueries";
 import { RestaurantOrderCard } from "../RestaurantOrderCard";
-import type { Order } from "../../types/order.types";
+import type { OrderDetail } from "../../types/order.types";
 import { purple, lightPurple } from "../../../common/theme/colorScheme";
-import { useAuth } from "../../../auth/hooks/useAuthContext";
 
 export const ManageOrdersPage = () => {
-  const { user } = useAuth();
-  // Use mock restaurant ID for testing, otherwise use user's actual ID
-  const restaurantId = user?.id || "rest-001";
-
-  const { data: orders, isLoading, error } = useRestaurantOrders(restaurantId);
+  const { data: orders, isLoading, error } = useAllRestaurantOrders();
   const acceptOrderMutation = useAcceptOrder();
   const declineOrderMutation = useDeclineOrder();
   const markReadyMutation = useMarkOrderReady();
@@ -86,17 +81,17 @@ export const ManageOrdersPage = () => {
     );
   }
 
-  const pendingOrders = orders?.filter((order) => order.status === "PENDING") || [];
+  const pendingOrders = orders?.filter((order) => order.status === "NEW") || [];
   const activeOrders =
     orders?.filter((order) =>
-      ["CONFIRMED", "PREPARING"].includes(order.status)
+      ["PREPARING", "READY"].includes(order.status)
     ) || [];
   const completedOrders =
     orders?.filter((order) =>
-      ["OUT_FOR_DELIVERY", "DELIVERED"].includes(order.status)
+      ["ON_DELIVERY", "DELIVERED"].includes(order.status)
     ) || [];
 
-  const renderOrdersList = (ordersList: Order[], emptyMessage: string) => {
+  const renderOrdersList = (ordersList: OrderDetail[], emptyMessage: string) => {
     if (ordersList.length === 0) {
       return (
         <Center py={12}>

@@ -11,11 +11,12 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import type { Order, OrderStatus } from "../types/order.types";
+import type { OrderDetail, OrderStatus } from "../types/order.types";
 import { OrderTrackingMap } from "./OrderTrackingMap";
+import { yellow, purple, pink } from "../../common/theme/colorScheme";
 
 interface CourierDeliveryCardProps {
-  order: Order;
+  order: OrderDetail;
   onPickup?: (orderId: string) => void;
   onDeliver?: (orderId: string) => void;
 }
@@ -27,11 +28,10 @@ interface StatusStyle {
 
 const getStatusStyle = (status: OrderStatus): StatusStyle => {
   const styles: Record<OrderStatus, StatusStyle> = {
-    PENDING: { bg: "#E2E8F0", color: "#2D3748" }, // Gray
-    CONFIRMED: { bg: "#BEE3F8", color: "#2C5282" }, // Blue
+    NEW: { bg: "#BEE3F8", color: "#2C5282" }, // Blue
     PREPARING: { bg: "#FED7AA", color: "#C05621" }, // Orange
     READY: { bg: "#D6BCFA", color: "#6B46C1" }, // Purple
-    OUT_FOR_DELIVERY: { bg: "#B2F5EA", color: "#00718F" }, // Cyan
+    ON_DELIVERY: { bg: "#B2F5EA", color: "#00718F" }, // Cyan
     DELIVERED: { bg: "#C6F6D5", color: "#276749" }, // Green
     CANCELLED: { bg: "#FED7D7", color: "#C53030" }, // Red
   };
@@ -50,7 +50,7 @@ export const CourierDeliveryCard = ({
   const [showMap, setShowMap] = useState(false);
 
   const isReady = order.status === "READY";
-  const isOutForDelivery = order.status === "OUT_FOR_DELIVERY";
+  const isOnDelivery = order.status === "ON_DELIVERY";
 
   return (
     <Card.Root width="100%" boxShadow="md">
@@ -58,8 +58,10 @@ export const CourierDeliveryCard = ({
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between">
             <Box>
-              <Heading size="md">{order.restaurantName}</Heading>
-              <Text fontSize="sm" color="gray.600" mt={1}>
+              <Heading size="md" color={"black"}>
+                {order.restaurantName}
+              </Heading>
+              <Text fontSize="sm" color={yellow} mt={1} fontWeight="medium">
                 Order #{order.id.slice(0, 8)}
               </Text>
             </Box>
@@ -81,37 +83,41 @@ export const CourierDeliveryCard = ({
           {/* Restaurant Address */}
           <Box>
             <HStack gap={2} mb={1}>
-              <MapPin size={16} color="#6B46C1" />
-              <Text fontSize="sm" fontWeight="semibold" color="purple.600">
+              <MapPin size={16} color={yellow} />
+              <Text fontSize="sm" fontWeight="semibold" color={yellow}>
                 Pick up from:
               </Text>
             </HStack>
-            <Text fontWeight="medium" ml={6}>
+            <Text fontWeight="medium" ml={6} color="black">
               {order.restaurantLocation?.address || "Restaurant address"}
             </Text>
           </Box>
 
           {/* Delivery Address */}
-          <Box>
-            <HStack gap={2} mb={1}>
-              <MapPin size={16} color="#00718F" />
-              <Text fontSize="sm" fontWeight="semibold" color="cyan.600">
-                Deliver to:
+          {order.deliveryAddress && (
+            <Box>
+              <HStack gap={2} mb={1}>
+                <MapPin size={16} color={yellow} />
+                <Text fontSize="sm" fontWeight="semibold" color={yellow}>
+                  Deliver to:
+                </Text>
+              </HStack>
+              <Text fontWeight="medium" ml={6} color="white">
+                {order.deliveryAddress.street}{" "}
+                {order.deliveryAddress.houseNumber},{" "}
+                {order.deliveryAddress.city} {order.deliveryAddress.postalCode}
               </Text>
-            </HStack>
-            <Text fontWeight="medium" ml={6}>
-              {order.deliveryAddress}
-            </Text>
-          </Box>
+            </Box>
+          )}
 
           <Separator />
 
           {/* Order Items Summary */}
           <Box>
-            <Text fontSize="sm" color="gray.600" mb={1}>
+            <Text fontSize="sm" color={purple} mb={1} fontWeight="semibold">
               Items: {order.items.length} item(s)
             </Text>
-            <Text fontWeight="bold" fontSize="lg" color="purple.600">
+            <Text fontWeight="bold" fontSize="lg" color={"black"}>
               Total: {order.totalPrice.toLocaleString()} HUF
             </Text>
           </Box>
@@ -121,8 +127,11 @@ export const CourierDeliveryCard = ({
             <Button
               onClick={() => setShowMap(!showMap)}
               size="sm"
-              colorScheme="purple"
+              bg={yellow}
+              color="black"
+              _hover={{ opacity: 0.8 }}
               variant="outline"
+              borderColor={yellow}
               flex={1}
             >
               {showMap ? "Hide Map" : "View Map"}
@@ -132,18 +141,22 @@ export const CourierDeliveryCard = ({
               <Button
                 onClick={() => onPickup(order.id)}
                 size="sm"
-                colorScheme="purple"
+                bg={purple}
+                color="black"
+                _hover={{ bg: pink }}
                 flex={1}
               >
                 Pick Up Order
               </Button>
             )}
 
-            {isOutForDelivery && onDeliver && (
+            {isOnDelivery && onDeliver && (
               <Button
                 onClick={() => onDeliver(order.id)}
                 size="sm"
-                colorScheme="green"
+                bg={purple}
+                color="black"
+                _hover={{ bg: pink }}
                 flex={1}
               >
                 Mark as Delivered

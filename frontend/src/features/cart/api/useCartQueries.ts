@@ -4,13 +4,14 @@ import type { AddItemRequest } from "../types/cart.types";
 
 export const CART_QUERY_KEY = ["cart"];
 
-export const useGetCart = () => {
+export const useGetCart = (enabled: boolean = true) => {
   return useQuery({
     queryKey: CART_QUERY_KEY,
     queryFn: cartApi.getCart,
     staleTime: 1000 * 60 * 5,
     retry: false,
     refetchOnWindowFocus: false,
+    enabled,
   });
 };
 

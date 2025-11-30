@@ -1,175 +1,68 @@
 import { apiClient } from "../../../lib/apiClient";
 import type {
-  CreateOrderRequest,
-  Order,
-  OrderTrackingInfo,
+  OrderDetail,
+  OrderIdRequest,
+  OrderStatusRequest,
+  CourierPosition,
 } from "../types/order.types";
-import { mockOrders } from "../data/mockOrders";
-
-// Toggle this to switch between mock data and real API
-const USE_MOCK_DATA = true;
 
 export const orderApi = {
-  createOrder: async (data: CreateOrderRequest): Promise<Order> => {
-    if (USE_MOCK_DATA) {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      throw new Error("Mock data: Creating orders not supported in demo mode");
-    }
-    const response = await apiClient.post<Order>("/api/orders", data);
+  placeOrder: async (): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders");
     return response.data;
   },
 
-  getUserOrders: async (): Promise<Order[]> => {
-    if (USE_MOCK_DATA) {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return mockOrders;
-    }
-    const response = await apiClient.get<Order[]>("/api/orders");
+  getCustomerOrder: async (): Promise<OrderDetail> => {
+    const response = await apiClient.get<OrderDetail>("/api/orders/me");
     return response.data;
   },
 
-  getOrderById: async (orderId: string): Promise<Order> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const order = mockOrders.find((o) => o.id === orderId);
-      if (!order) throw new Error("Order not found");
-      return order;
-    }
-    const response = await apiClient.get<Order>(`/api/orders/${orderId}`);
+  getOrderById: async (orderId: string): Promise<OrderDetail> => {
+    const response = await apiClient.get<OrderDetail>(`/api/orders/${orderId}`);
     return response.data;
   },
 
-  getOrderTracking: async (orderId: string): Promise<OrderTrackingInfo> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      const order = mockOrders.find((o) => o.id === orderId);
-      if (!order) throw new Error("Order not found");
-
-      // Simulate moving courier
-      const tracking: OrderTrackingInfo = {
-        orderId: order.id,
-        status: order.status,
-        restaurantLocation: order.restaurantLocation,
-        deliveryLocation: order.deliveryLocation,
-        courierLocation: order.courierLocation
-          ? {
-              ...order.courierLocation,
-              // Add small random movement to simulate courier moving
-              latitude:
-                order.courierLocation.latitude + (Math.random() - 0.5) * 0.001,
-              longitude:
-                order.courierLocation.longitude + (Math.random() - 0.5) * 0.001,
-            }
-          : undefined,
-      };
-      return tracking;
-    }
-    const response = await apiClient.get<OrderTrackingInfo>(
-      `/api/orders/${orderId}/tracking`
-    );
+  getOrdersForRestaurantByStatus: async (
+    orderStatus: OrderStatusRequest
+  ): Promise<OrderDetail[]> => {
+    const response = await apiClient.get<OrderDetail[]>("/api/orders/restaurant", {
+      params: orderStatus,
+    });
     return response.data;
   },
 
-  cancelOrder: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "CANCELLED";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/cancel`);
-  },
-
-  // Restaurant-specific endpoints
-  getRestaurantOrders: async (restaurantId: string): Promise<Order[]> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return mockOrders.filter((o) => o.restaurantId !== restaurantId);
-    }
-    const response = await apiClient.get<Order[]>(
-      `/api/restaurants/${restaurantId}/orders`
-    );
+  acceptOrder: async (request: OrderIdRequest): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders/accept", request);
     return response.data;
   },
 
-  acceptOrder: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "CONFIRMED";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/accept`);
-  },
-
-  declineOrder: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "CANCELLED";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/decline`);
-  },
-
-  markOrderReady: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "OUT_FOR_DELIVERY";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/ready`);
-  },
-
-  // Courier-specific endpoints
-  getCourierDeliveries: async (courierId: string): Promise<Order[]> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // Return orders that are ready for pickup or assigned to this courier
-      return mockOrders.filter(
-        (o) =>
-          o.status === "READY" ||
-          (o.courierId === courierId && ["OUT_FOR_DELIVERY", "DELIVERED"].includes(o.status))
-      );
-    }
-    const response = await apiClient.get<Order[]>(`/api/couriers/${courierId}/deliveries`);
+  declineOrder: async (request: OrderIdRequest): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders/decline", request);
     return response.data;
   },
 
-  pickupOrder: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "OUT_FOR_DELIVERY";
-        mockOrders[orderIndex].courierId = "courier-001";
-        mockOrders[orderIndex].courierName = "John Courier";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/pickup`);
+  prepareOrder: async (request: OrderIdRequest): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders/prepare", request);
+    return response.data;
   },
 
-  deliverOrder: async (orderId: string): Promise<void> => {
-    if (USE_MOCK_DATA) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const orderIndex = mockOrders.findIndex((o) => o.id === orderId);
-      if (orderIndex !== -1) {
-        mockOrders[orderIndex].status = "DELIVERED";
-      }
-      return;
-    }
-    await apiClient.put(`/api/orders/${orderId}/deliver`);
+  startDelivery: async (request: OrderIdRequest): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders/start-delivery", request);
+    return response.data;
+  },
+
+  getOrdersForCourier: async (): Promise<OrderDetail[]> => {
+    const response = await apiClient.get<OrderDetail[]>("/api/orders/courier/me");
+    return response.data;
+  },
+
+  finishDelivery: async (request: OrderIdRequest): Promise<OrderDetail> => {
+    const response = await apiClient.post<OrderDetail>("/api/orders/finish-delivery", request);
+    return response.data;
+  },
+
+  trackOrder: async (orderId: string): Promise<CourierPosition> => {
+    const response = await apiClient.get<CourierPosition>(`/api/courier/track/${orderId}`);
+    return response.data;
   },
 };

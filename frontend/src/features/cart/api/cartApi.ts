@@ -8,6 +8,8 @@ export const cartApi = {
    * Get the current user's cart
    */
   getCart: async (): Promise<CartDetails> => {
+    console.log("[Cart API] getCart called");
+    console.log("[Cart API] Token in localStorage before request:", localStorage.getItem("authToken") ? "EXISTS" : "MISSING");
     const response = await apiClient.get<CartDetails>(CART_BASE_URL);
     return response.data;
   },

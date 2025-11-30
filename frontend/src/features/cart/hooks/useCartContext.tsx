@@ -6,6 +6,7 @@ import {
   useGetCart,
   useUpdateCart,
 } from "../api/useCartQueries";
+import { useAuth } from "../../auth/hooks/useAuthContext";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -21,7 +22,8 @@ interface LocalCartItem {
 }
 
 export function CartProvider({ children }: CartProviderProps) {
-  const { data: backendCart, isLoading: isLoadingCart, error } = useGetCart();
+  const { isLoggedIn } = useAuth();
+  const { data: backendCart, isLoading: isLoadingCart, error } = useGetCart(isLoggedIn);
   const updateCartMutation = useUpdateCart();
 
   const [localCartItems, setLocalCartItems] = useState<LocalCartItem[]>([]);

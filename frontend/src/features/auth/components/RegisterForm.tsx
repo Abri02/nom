@@ -13,8 +13,11 @@ type RegisterFormInputs = {
   email: string;
   password: string;
   confirmPassword: string;
-  address?: string;
-  phoneNumber?: string;
+  street: string;
+  streetNumber: string;
+  city: string;
+  zipCode: string;
+  phoneNumber: string;
   startTime?: string;
   endTime?: string;
 };
@@ -71,8 +74,11 @@ export function RegisterForm({ userType }: RegisterFormProps) {
         name: data.name,
         email: data.email,
         password: data.password,
-        //TODO: ADD PHONE NUMBER PROPERLY
-        phoneNumber: data.phoneNumber || "+3690512553",
+        phoneNumber: data.phoneNumber,
+        street: data.street,
+        streetNumber: data.streetNumber,
+        city: data.city,
+        zipCode: data.zipCode,
         role: roleMap[userType],
         ...(roleMap[userType] === "RESTAURANT" &&
           data.startTime &&
@@ -221,36 +227,133 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                   )}
                 </Field.Root>
 
+                <Field.Root invalid={!!errors.phoneNumber}>
+                  <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                    Telefonszám
+                  </Field.Label>
+                  <NomInputs
+                    {...formRegister("phoneNumber", {
+                      required: "A telefonszám kötelező",
+                      pattern: {
+                        value: /^[0-9+\-() ]{10,}$/,
+                        message: "Érvénytelen telefonszám",
+                      },
+                    })}
+                    type="tel"
+                    placeholder="+36 70 123 4567"
+                    startElement={<Phone size={20} />}
+                    isInvalid={!!errors.phoneNumber}
+                  />
+                  {errors.phoneNumber && (
+                    <Field.ErrorText
+                      fontSize="sm"
+                      color="red.500"
+                      mt="0.5rem"
+                    >
+                      {errors.phoneNumber.message}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                <Field.Root invalid={!!errors.street}>
+                  <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                    Utca
+                  </Field.Label>
+                  <NomInputs
+                    {...formRegister("street", {
+                      required: "Az utca kötelező",
+                    })}
+                    type="text"
+                    placeholder="Fő utca"
+                    startElement={<MapPin size={20} />}
+                    isInvalid={!!errors.street}
+                  />
+                  {errors.street && (
+                    <Field.ErrorText
+                      fontSize="sm"
+                      color="red.500"
+                      mt="0.5rem"
+                    >
+                      {errors.street.message}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                <Field.Root invalid={!!errors.streetNumber}>
+                  <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                    Házszám
+                  </Field.Label>
+                  <NomInputs
+                    {...formRegister("streetNumber", {
+                      required: "A házszám kötelező",
+                    })}
+                    type="text"
+                    placeholder="42"
+                    isInvalid={!!errors.streetNumber}
+                  />
+                  {errors.streetNumber && (
+                    <Field.ErrorText
+                      fontSize="sm"
+                      color="red.500"
+                      mt="0.5rem"
+                    >
+                      {errors.streetNumber.message}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                <Field.Root invalid={!!errors.city}>
+                  <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                    Város
+                  </Field.Label>
+                  <NomInputs
+                    {...formRegister("city", {
+                      required: "A város kötelező",
+                    })}
+                    type="text"
+                    placeholder="Budapest"
+                    isInvalid={!!errors.city}
+                  />
+                  {errors.city && (
+                    <Field.ErrorText
+                      fontSize="sm"
+                      color="red.500"
+                      mt="0.5rem"
+                    >
+                      {errors.city.message}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
+
+                <Field.Root invalid={!!errors.zipCode}>
+                  <Field.Label fontWeight="700" color={yellow} fontSize="sm">
+                    Irányítószám
+                  </Field.Label>
+                  <NomInputs
+                    {...formRegister("zipCode", {
+                      required: "Az irányítószám kötelező",
+                      pattern: {
+                        value: /^[0-9]{4}$/,
+                        message: "Érvénytelen irányítószám (4 számjegy)",
+                      },
+                    })}
+                    type="text"
+                    placeholder="1234"
+                    isInvalid={!!errors.zipCode}
+                  />
+                  {errors.zipCode && (
+                    <Field.ErrorText
+                      fontSize="sm"
+                      color="red.500"
+                      mt="0.5rem"
+                    >
+                      {errors.zipCode.message}
+                    </Field.ErrorText>
+                  )}
+                </Field.Root>
+
                 {userType === "restaurant" && (
                   <>
-                    <Field.Root invalid={!!errors.address}>
-                      <Field.Label fontWeight="700" color={yellow} fontSize="sm">
-                        Cím
-                      </Field.Label>
-                      <NomInputs
-                        {...formRegister("address", {
-                          required: "A cím kötelező",
-                          minLength: {
-                            value: 5,
-                            message: "A cím legalább 5 karakter hosszú",
-                          },
-                        })}
-                        type="text"
-                        placeholder="Utca, város, irányítószám"
-                        startElement={<MapPin size={20} />}
-                        isInvalid={!!errors.address}
-                      />
-                      {errors.address && (
-                        <Field.ErrorText
-                          fontSize="sm"
-                          color="red.500"
-                          mt="0.5rem"
-                        >
-                          {errors.address.message}
-                        </Field.ErrorText>
-                      )}
-                    </Field.Root>
-
                     <Field.Root invalid={!!errors.startTime}>
                       <Field.Label fontWeight="700" color={yellow} fontSize="sm">
                         Nyitás
@@ -297,36 +400,6 @@ export function RegisterForm({ userType }: RegisterFormProps) {
                       )}
                     </Field.Root>
                   </>
-                )}
-
-                {userType === "courier" && (
-                  <Field.Root invalid={!!errors.phoneNumber}>
-                    <Field.Label fontWeight="700" color={yellow} fontSize="sm">
-                      Telefonszám
-                    </Field.Label>
-                    <NomInputs
-                      {...formRegister("phoneNumber", {
-                        required: "A telefonszám kötelező",
-                        pattern: {
-                          value: /^[0-9+\-() ]{10,}$/,
-                          message: "Érvénytelen telefonszám",
-                        },
-                      })}
-                      type="tel"
-                      placeholder="+36 70 123 4567"
-                      startElement={<Phone size={20} />}
-                      isInvalid={!!errors.phoneNumber}
-                    />
-                    {errors.phoneNumber && (
-                      <Field.ErrorText
-                        fontSize="sm"
-                        color="red.500"
-                        mt="0.5rem"
-                      >
-                        {errors.phoneNumber.message}
-                      </Field.ErrorText>
-                    )}
-                  </Field.Root>
                 )}
 
                 <Field.Root invalid={!!errors.password}>

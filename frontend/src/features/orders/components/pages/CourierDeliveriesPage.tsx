@@ -10,16 +10,14 @@ import {
 } from "@chakra-ui/react";
 import { useCourierDeliveries, usePickupOrder, useDeliverOrder } from "../../api/useOrderQueries";
 import { CourierDeliveryCard } from "../CourierDeliveryCard";
-import type { Order } from "../../types/order.types";
+import type { OrderDetail } from "../../types/order.types";
 import { purple, lightPurple } from "../../../common/theme/colorScheme";
 import { useAuth } from "../../../auth/hooks/useAuthContext";
 
 export const CourierDeliveriesPage = () => {
   const { user } = useAuth();
-  // Use mock courier ID for testing, otherwise use user's actual ID
-  const courierId = user?.id || "courier-001";
 
-  const { data: deliveries, isLoading, error } = useCourierDeliveries(courierId);
+  const { data: deliveries, isLoading, error } = useCourierDeliveries();
   const pickupMutation = usePickupOrder();
   const deliverMutation = useDeliverOrder();
 
@@ -72,14 +70,16 @@ export const CourierDeliveriesPage = () => {
     );
   }
 
-  const availableDeliveries =
-    deliveries?.filter((order) => order.status === "READY") || [];
-  const activeDeliveries =
-    deliveries?.filter((order) => order.status === "OUT_FOR_DELIVERY") || [];
-  const completedDeliveries =
-    deliveries?.filter((order) => order.status === "DELIVERED") || [];
+  // Filter orders to show only those assigned to this courier
+  const courierOrders = deliveries?.filter((order) =>
+    order.courierId === user?.id
+  ) || [];
 
-  const renderDeliveriesList = (deliveriesList: Order[], emptyMessage: string) => {
+  const availableDeliveries = courierOrders.filter((order) => order.status === "READY");
+  const activeDeliveries = courierOrders.filter((order) => order.status === "ON_DELIVERY");
+  const completedDeliveries = courierOrders.filter((order) => order.status === "DELIVERED");
+
+  const renderDeliveriesList = (deliveriesList: OrderDetail[], emptyMessage: string) => {
     if (deliveriesList.length === 0) {
       return (
         <Center py={12}>

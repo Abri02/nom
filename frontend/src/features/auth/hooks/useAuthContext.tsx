@@ -58,6 +58,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     email,
     password,
     phoneNumber,
+    zipCode,
+    city,
+    street,
+    streetNumber,
     role,
     restaurantProfile,
   }: RegisterRequest) => {
@@ -68,26 +72,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email,
         password,
         phoneNumber,
+        zipCode,
+        city,
+        street,
+        streetNumber,
         role,
         name,
         restaurantProfile,
       });
 
-      // Check if response exists and has either token or email
-      if (!response || (!response.token && !response.email)) {
-        throw new Error(response?.message || "Registration failed");
+      console.log("Registration response:", response);
+
+      // Check if response exists
+      if (!response) {
+        throw new Error("Registration failed - no response");
+      }
+
+      // Warn if no token is provided
+      if (!response.token) {
+        console.warn("No token received in registration response");
       }
 
       const newUser: User = {
         id: response.id,
         email: response.email || email,
-        role: role,
+        role: response.role || role,
       };
 
       // Store token if available
       if (response.token) {
         localStorage.setItem("authToken", response.token);
+        console.log("Token stored in localStorage");
+
+        // Verify storage
+        const storedToken = localStorage.getItem("authToken");
+        console.log("Verification - Token retrieved:", storedToken ? `${storedToken.substring(0, 20)}...` : 'null');
+        console.log("Verification - Token matches:", storedToken === response.token);
+      } else {
+        console.warn("No token to store - authentication may not work");
       }
+
       localStorage.setItem("user", JSON.stringify(newUser));
 
       setUser(newUser);
@@ -109,9 +133,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         password,
       });
 
-      // Check if response exists and has either token or email
-      if (!response || (!response.token && !response.email)) {
-        throw new Error(response?.message || "Invalid credentials");
+      console.log("Login response:", response);
+
+      // Check if response exists
+      if (!response) {
+        throw new Error("Login failed - no response");
+      }
+
+      // Warn if no token is provided
+      if (!response.token) {
+        console.warn("No token received in login response");
       }
 
       const loggedInUser: User = {
@@ -123,7 +154,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Store token if available
       if (response.token) {
         localStorage.setItem("authToken", response.token);
+        console.log("Token stored in localStorage");
+
+        // Verify storage
+        const storedToken = localStorage.getItem("authToken");
+        console.log("Verification - Token retrieved:", storedToken ? `${storedToken.substring(0, 20)}...` : 'null');
+        console.log("Verification - Token matches:", storedToken === response.token);
+      } else {
+        console.warn("No token to store - authentication may not work");
       }
+
       localStorage.setItem("user", JSON.stringify(loggedInUser));
 
       setUser(loggedInUser);
