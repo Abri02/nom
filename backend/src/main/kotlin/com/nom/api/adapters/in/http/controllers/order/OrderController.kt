@@ -40,16 +40,6 @@ class OrderController(
         return ResponseEntity.status(HttpStatus.CREATED).body(orderDetail)
     }
 
-    @GetMapping("/{orderId}")
-    fun getOrderById(
-        @PathVariable orderId: String
-    ): ResponseEntity<OrderDetail> {
-        val order = getOrderByIdUseCase.getOrderById(orderId)
-            ?: return ResponseEntity.notFound().build()
-
-        return ResponseEntity.ok(order)
-    }
-
     @GetMapping("/me")
     fun getCustomerOrder(
         @AuthenticationPrincipal user: AuthUser?
@@ -61,6 +51,18 @@ class OrderController(
 
         return ResponseEntity.ok(order)
     }
+
+    @GetMapping("/{orderId}")
+    fun getOrderById(
+        @PathVariable orderId: String
+    ): ResponseEntity<OrderDetail> {
+        val order = getOrderByIdUseCase.getOrderById(orderId)
+            ?: return ResponseEntity.notFound().build()
+
+        return ResponseEntity.ok(order)
+    }
+
+
 
     @GetMapping("/restaurant")
     fun getOrdersForRestaurantByStatus(
