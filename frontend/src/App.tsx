@@ -14,6 +14,11 @@ import { OrdersPage } from "./features/orders/components/pages/OrdersPage";
 import { ManageOrdersPage } from "./features/orders/components/pages/ManageOrdersPage";
 import { CourierDeliveriesPage } from "./features/orders/components/pages/CourierDeliveriesPage";
 import { CheckoutPage } from "./features/orders/components/pages/CheckoutPage";
+import { AdminRoute } from "./features/admin/components/AdminRoute";
+import { AdminDashboard } from "./features/admin/components/pages/AdminDashboard";
+import { UsersManagementPage } from "./features/admin/components/pages/UsersManagementPage";
+import { OrdersManagementPage } from "./features/admin/components/pages/OrdersManagementPage";
+import { RestaurantsManagementPage } from "./features/admin/components/pages/RestaurantsManagementPage";
 
 function App() {
   return (
@@ -43,6 +48,38 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/manage-orders" element={<ManageOrdersPage />} />
           <Route path="/deliveries" element={<CourierDeliveriesPage />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <UsersManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <AdminRoute>
+                <OrdersManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/restaurants"
+            element={
+              <AdminRoute>
+                <RestaurantsManagementPage />
+              </AdminRoute>
+            }
+          />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </NavBarLayout>
