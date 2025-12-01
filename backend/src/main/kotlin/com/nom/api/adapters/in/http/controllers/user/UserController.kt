@@ -161,9 +161,12 @@ class UserController(
 
 
         } catch (e: IllegalArgumentException) {
+            println("IllegalArgumentException in addFavouriteMenuItem: ${e.message}")
             ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse(e.message ?: "Bad request"))
         } catch (e: Exception) {
+            println("Unexpected exception in addFavouriteMenuItem: ${e.message}")
+            e.printStackTrace()
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse("Internal server error"))
         }
