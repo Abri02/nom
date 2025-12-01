@@ -12,9 +12,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-/**
- * MongoDB implementation of UserRepository (Output Adapter)
- */
 class MongoUserRepository(
     private val collection: MongoCollection<Document>
 ) : UserRepository {
@@ -102,7 +99,6 @@ class MongoUserRepository(
         val cart = if (cartDoc != null) {
             documentToCart(cartDoc, id)
         } else {
-            // ha nincs cart a usernél, csinálunk egy üreset
             Cart(
                 customerId = id,
                 restaurantId = null,

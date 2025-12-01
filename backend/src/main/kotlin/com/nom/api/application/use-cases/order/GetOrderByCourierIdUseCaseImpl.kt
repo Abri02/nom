@@ -17,7 +17,6 @@ class GetOrderByCourierIdUseCaseImpl(
             return emptyList()
         }
 
-        // Előre lekérjük az étterem neveket, hogy ne minden rendelésnél külön hívjuk
         val restaurantNamesById: Map<String, String> =
             orders
                 .map { it.restaurantId }

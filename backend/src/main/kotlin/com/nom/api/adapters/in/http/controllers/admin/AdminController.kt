@@ -25,7 +25,6 @@ class AdminController(
 ) {
 
 
-    // 1. Felhasználók listázása
     @GetMapping("/users")
     fun getAllUsers(@AuthenticationPrincipal email: String?): ResponseEntity<List<User>> {
 
@@ -33,7 +32,6 @@ class AdminController(
     }
 
 
-    // 3. Összes rendelés megtekintése [cite: 218-222]
     @GetMapping("/orders")
     fun getAllOrders(@AuthenticationPrincipal user: AuthUser?): ResponseEntity<List<OrderDetail>>  {
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()

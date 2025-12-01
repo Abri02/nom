@@ -168,7 +168,6 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
         val cartDoc = doc.get("cart", Document::class.java)
         val cart = cartDoc.let { documentToCart(it, customerId) }
 
-        // deliveryAddress-t most nem írod, ezért null
         return Order(
             id = id,
             customerId = customerId,

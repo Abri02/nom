@@ -15,7 +15,7 @@ data class User(
     val Street: String,
     val StreetNumber: String,
     val role: UserRole,
-    val description: String? = null, //pl ahhoz hogy milyen konyha
+    val description: String? = null,
     val isSuspended: Boolean = false,
     val cart: Cart?,
     val favouriteRestaurants: MutableList<String> = mutableListOf(),

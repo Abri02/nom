@@ -57,7 +57,7 @@ class CreateOrderUseCaseImpl(
             if (menuItem != null) {
                 menuItem.price * item.quantity
             } else {
-                0L // ha közben törölték a menüpontot, nem számoljuk bele
+                0L
             }
         }
 

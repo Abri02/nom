@@ -16,10 +16,7 @@ import java.util.*
 
 @Repository
 class MongoMenuRepository(
-    /**
-     * Ugyanaz a collection, mint ami a User-eket tárolja.
-     * Minden RESTAURANT role-ú user tartalmazhat egy restaurantProfile mezőt.
-     */
+
     @Qualifier("restaurantsCollection") private val collection: MongoCollection<Document>
 ) : MenuRepository {
 
@@ -34,7 +31,6 @@ class MongoMenuRepository(
     ): RestaurantProfile {
         val doc = restaurantProfileToDocument(profile)
 
-        // ha létezik → replace, ha nem → insert
         val result = collection.replaceOne(
             Filters.eq("_id", restaurantId),
             doc,
@@ -143,12 +139,10 @@ class MongoMenuRepository(
         val result = collection.updateOne(filter, update)
 
         if (result.matchedCount == 0L) {
-            // ilyen étterem nincs
             throw IllegalStateException("Restaurant with id $restaurantId not found")
         }
 
         if (result.modifiedCount == 0L) {
-            // étterem megvan, de ilyen menuItem nincs a menüben
             throw IllegalStateException("Menu item with id $menuItemId not found for restaurant $restaurantId")
         }
     }

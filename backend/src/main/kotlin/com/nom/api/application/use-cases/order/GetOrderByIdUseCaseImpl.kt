@@ -27,7 +27,7 @@ class GetOrderByIdUseCaseImpl(
             restaurantName = restaurantName,
             courierId = order.courierId,
             items = items,
-            deliveryAddress = order.deliveryAddress,   // nálad most lehet még null
+            deliveryAddress = order.deliveryAddress,
             currentLocation = order.currentLocation,
             totalPrice = order.totalPrice,
             status = order.status,

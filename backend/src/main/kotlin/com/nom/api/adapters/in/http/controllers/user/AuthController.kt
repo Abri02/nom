@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.util.UUID
 
-/**
- * Simple Authentication Controller
- */
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(

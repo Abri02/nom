@@ -12,9 +12,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
-/**
- * Input Adapter - HTTP Controller for User operations
- */
 @RestController
 @RequestMapping("/api/users")
 class UserController(
