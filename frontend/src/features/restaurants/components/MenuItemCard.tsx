@@ -1,8 +1,14 @@
 import { Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
 import type { MenuItem } from "../types/restaurant.types";
-import { purple, pink, yellow } from "../../common/theme/colorScheme";
+import {
+  purple,
+  pink,
+  yellow,
+  lightPurple,
+} from "../../common/theme/colorScheme";
 import { useCart } from "../../cart/hooks/useCartContext";
 import { useRestaurant } from "../hooks/useRestaurantContext";
+import { NomButtons } from "../../common/components/NomButton";
 
 interface MenuItemCardProps {
   readonly menuItem: MenuItem;
@@ -14,7 +20,11 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
 
   const handleAddToCart = () => {
     if (selectedRestaurant && selectedRestaurantId) {
-      addItem(menuItem, selectedRestaurant.restaurantName, selectedRestaurantId);
+      addItem(
+        menuItem,
+        selectedRestaurant.restaurantName,
+        selectedRestaurantId
+      );
     }
   };
 
@@ -24,19 +34,21 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
       borderColor={pink}
       borderRadius="xl"
       overflow="hidden"
-      bg="white"
+      bg={purple}
       boxShadow="lg"
       _hover={{
         transform: "translateY(-6px)",
         boxShadow: "xl",
-        borderColor: purple,
+        borderColor: lightPurple,
         transition: "all 0.3s",
       }}
     >
       <Box
         h="180px"
-        bg="gray.300"
-        backgroundImage={menuItem.imageUrl}
+        bg={lightPurple}
+        backgroundImage={
+          menuItem.imageUrl ? `url(${menuItem.imageUrl})` : undefined
+        }
         backgroundSize="cover"
         backgroundPosition="center"
         display="flex"
@@ -44,18 +56,18 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
         justifyContent="center"
       >
         {!menuItem.imageUrl && (
-          <Text fontSize="4xl" color="gray.500">
+          <Text fontSize="4xl" color={yellow}>
             🍽️
           </Text>
         )}
       </Box>
 
       <Box p={5}>
-        <Text fontSize="2xl" fontWeight="bold" color={purple} mb={2}>
+        <Text fontSize="2xl" fontWeight="bold" color={yellow} mb={2}>
           {menuItem.name}
         </Text>
 
-        <Text fontSize="md" color="gray.700" mb={4} minH="40px">
+        <Text fontSize="md" color={yellow} mb={4} minH="40px">
           {menuItem.description || "No description available"}
         </Text>
 
@@ -66,23 +78,18 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
         {menuItem.allergens.length > 0 && (
           <HStack gap={2} flexWrap="wrap" mb={3}>
             {menuItem.allergens.map((allergen) => (
-              <Badge key={allergen} colorPalette="red" size="sm">
+              <Badge key={allergen} bgColor={yellow} color={"black"} size="md">
                 {allergen}
               </Badge>
             ))}
           </HStack>
         )}
 
-        <Button
+        <NomButtons
           width="full"
-          bg={purple}
-          color="white"
-          _hover={{ bg: pink }}
-          size="lg"
           onClick={handleAddToCart}
-        >
-          Add to Cart
-        </Button>
+          title="Add to Cart"
+        ></NomButtons>
       </Box>
     </Box>
   );

@@ -1,5 +1,5 @@
 import { Box, Heading, Text, SimpleGrid } from "@chakra-ui/react";
-import { purple, pink } from "../../../common/theme/colorScheme";
+import { purple, pink, yellow } from "../../../common/theme/colorScheme";
 import { Navigate, useParams } from "react-router-dom";
 import { MenuItemCard } from "../MenuItemCard";
 import { useGetRestaurantProfile } from "../../api/useRestaurantQueries";
@@ -36,7 +36,7 @@ export function MenuPage() {
         mb={8}
         p={8}
         borderRadius="xl"
-        bg="white"
+        bg={purple}
         boxShadow="xl"
         borderWidth="4px"
         borderColor={pink}
@@ -52,12 +52,17 @@ export function MenuPage() {
           bgGradient: `linear(to-r, ${purple}, ${pink})`,
         }}
       >
-        <Heading size="4xl" color={purple} mb={3} fontWeight="extrabold">
+        <Heading size="4xl" color={yellow} mb={3} fontWeight="extrabold">
           {restaurant.restaurantName}
         </Heading>
         {restaurant.openingHours && (
-          <Text fontSize="xl" color="gray.700" fontWeight="medium">
+          <Text fontSize="xl" color={yellow} fontWeight="medium">
             🕒 {restaurant.openingHours}
+          </Text>
+        )}
+        {restaurant.description && (
+          <Text mt={4} fontSize="lg" color={yellow}>
+            {restaurant.description}
           </Text>
         )}
       </Box>
