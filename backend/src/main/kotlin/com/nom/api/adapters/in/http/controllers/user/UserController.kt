@@ -5,6 +5,7 @@ import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.user.entities.UserRole
 import com.nom.api.domain.ports.`in`.CreateUserRequest
 import com.nom.api.domain.ports.`in`.CreateUserUseCase
+import com.nom.api.domain.user.entities.User
 import com.nom.api.domain.user.ports.`in`.*
 import com.nom.api.security.AuthUser
 import org.springframework.http.HttpStatus
@@ -23,11 +24,16 @@ class UserController(
     private val getFavouriteRestaurantsUseCase: GetFavouriteRestaurantsUseCase,
     private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
-    private val isFavouriteUseCase: IsFavouriteUseCase
+    private val isFavouriteUseCase: IsFavouriteUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val updateUserProfileUseCase: UpdateUserProfileUseCase,
 ) {
 
     @PostMapping
-    suspend fun createOrUpdateUser(@AuthenticationPrincipal authUser: AuthUser?,@RequestBody request: CreateUserHttpRequest): ResponseEntity<Any> {
+    suspend fun createOrUpdateUser(
+        @AuthenticationPrincipal authUser: AuthUser?,
+        @RequestBody request: CreateUserHttpRequest
+    ): ResponseEntity<Any> {
         return try {
             if (request.id != null) {
                 val updatedUser = updateUserUseCase.updateUser(
@@ -144,6 +150,48 @@ class UserController(
         return ResponseEntity.ok(favourites)
     }
 
+    @GetMapping("/profile")
+    fun getProfile(
+        @AuthenticationPrincipal user: AuthUser?
+    ): ResponseEntity<User> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        val user = getUserByIdUseCase.getUserById(principal.id)
+        return ResponseEntity.ok(user)
+    }
+
+    @PostMapping("/profile")
+    suspend fun updateProfile(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: UpdateUserProfileRequest
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        val updateUserProfileRequest = UpdateUserProfileRequest(
+            id = principal.id,
+            name = request.name,
+            email = request.email,
+            phoneNumber = request.phoneNumber,
+            street = request.street,
+            streetNumber = request.streetNumber,
+            description = request.description,
+            city = request.city,
+            zipCode = request.zipCode
+        )
+
+        return try {
+            val updatedUser = updateUserProfileUseCase.updateUserProfile(updateUserProfileRequest)
+            return ResponseEntity.ok(updatedUser)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+
+    }
+
     @DeleteMapping("/favourites")
     fun removeFavouriteRestaurant(
         @AuthenticationPrincipal user: AuthUser?,
@@ -202,7 +250,7 @@ data class CreateUserHttpRequest(
     val email: String,
     val password: String?,
     val phoneNumber: String,
-    val zipCode : String,
+    val zipCode: String,
     val city: String,
     val street: String,
     val streetNumber: String,
@@ -222,6 +270,18 @@ data class UserResponse(
     val phoneNumber: String,
     val role: UserRole,
     val createdAt: String
+)
+
+data class UserProfileResponse(
+    val id: String,
+    val name: String,
+    val email: String,
+    val phoneNumber: String,
+    val street: String,
+    val streetNumber: String,
+    val description: String?,
+    val city: String,
+    val zipCode: String
 )
 
 data class ErrorResponse(

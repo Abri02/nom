@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class GetRestaurantsUseCaseImpl(
-    private val userRepository: UserRepository // Ezt bővíteni kell!
+    private val userRepository: UserRepository
 ) : GetRestaurantsUseCase {
 
     override suspend fun getRestaurants(cuisineType: String?): List<User> {
-        // Itt kérjük le azokat a felhasználókat, akiknek a ROLE-ja RESTAURANT
-        // Ha van konyha típus szűrés (cuisineType), azt is itt kezeljük
         return userRepository.findAllRestaurants(cuisineType)
     }
 }

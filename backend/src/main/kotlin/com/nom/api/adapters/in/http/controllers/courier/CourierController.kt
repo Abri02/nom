@@ -15,7 +15,6 @@ class CourierController(
     private val userRepository: UserRepository
 ) {
 
-    // 1. FUTÁR: Pozíció frissítése (pl. 10 másodpercenként hívja a mobilapp)
     @PutMapping("/position")
     fun updatePosition(
         @RequestBody request: UpdatePositionRequest,
@@ -23,8 +22,6 @@ class CourierController(
     ): ResponseEntity<Void> {
         if (email == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val user = userRepository.findByEmail(email) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-
-        // Opcionális: Ellenőrizheted, hogy a user role-ja COURIER-e
 
         manageCourierLocationUseCase.updatePosition(
             courierId = user.id!!,
@@ -34,7 +31,6 @@ class CourierController(
         return ResponseEntity.ok().build()
     }
 
-    // 2. VÁSÁRLÓ: Futár követése rendelés alapján
     @GetMapping("/track/{orderId}")
     fun trackOrder(
         @PathVariable orderId: String,

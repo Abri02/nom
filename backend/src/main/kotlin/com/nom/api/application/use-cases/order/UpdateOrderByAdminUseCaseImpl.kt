@@ -28,7 +28,6 @@ class UpdateOrderByAdminUseCaseImpl(
         val existing = orderRepository.findById(orderId)
             ?: throw IllegalArgumentException("Order not found with id: $orderId")
 
-        // cart újraépítése az OrderDetail.items alapján
         val updatedCart = Cart(
             id = existing.cart?.id,
             customerId = existing.customerId,
@@ -37,7 +36,6 @@ class UpdateOrderByAdminUseCaseImpl(
             totalPrice = order.totalPrice
         )
 
-        // új Order példány a frissített adatokkal
         val updatedOrder = Order(
             id = existing.id,
             customerId = existing.customerId,
@@ -48,17 +46,16 @@ class UpdateOrderByAdminUseCaseImpl(
             currentLocation = order.currentLocation,
             totalPrice = order.totalPrice,
             status = order.status,
-            createdAt = existing.createdAt      // ne írjuk át
+            createdAt = existing.createdAt
         )
 
         val saved = orderRepository.save(updatedOrder)
 
-        // visszatérés friss OrderDetail formában
         return OrderDetail(
             id = saved.id,
             customerId = saved.customerId,
             restaurantId = saved.restaurantId,
-            restaurantName = order.restaurantName, // ezt domainben nem tárolod, jönhet a requestből
+            restaurantName = order.restaurantName,
             courierId = saved.courierId,
             items = saved.cart?.items ?: mutableListOf(),
             deliveryAddress = saved.deliveryAddress,

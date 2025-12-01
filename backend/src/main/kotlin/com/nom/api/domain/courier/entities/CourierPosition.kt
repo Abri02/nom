@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class CourierPosition(
     val id: String? = null,
-    val courierId: String, // Melyik futár
+    val courierId: String,
     val latitude: Double,
     val longitude: Double,
     val lastUpdated: LocalDateTime = LocalDateTime.now()
