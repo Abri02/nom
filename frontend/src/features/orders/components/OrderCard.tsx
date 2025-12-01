@@ -10,6 +10,7 @@ import {
   Separator,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { MapPin } from "lucide-react";
 import type { Order, OrderStatus } from "../types/order.types";
 import { OrderTrackingMap } from "./OrderTrackingMap";
 import { yellow, purple } from "../../common/theme/colorScheme";
@@ -102,6 +103,20 @@ export const OrderCard = ({ order, onCancelOrder }: OrderCardProps) => {
               {order.totalPrice.toLocaleString()} HUF
             </Text>
           </HStack>
+
+          <Separator />
+
+          <Box>
+            <HStack gap={2} mb={1}>
+              <MapPin size={16} color={yellow} />
+              <Text fontSize="sm" fontWeight="semibold" color={yellow}>
+                Pick up from:
+              </Text>
+            </HStack>
+            <Text fontWeight="medium" ml={6} color={yellow}>
+              {order.restaurantLocation?.address || order.restaurantName}
+            </Text>
+          </Box>
 
           {order.deliveryAddress && (
             <Box>

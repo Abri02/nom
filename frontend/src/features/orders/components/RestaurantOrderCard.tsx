@@ -103,7 +103,10 @@ export const RestaurantOrderCard = ({
             {order.items.map((item, index) => (
               <HStack key={index} justify="space-between">
                 <Text color={yellow}>
-                  {item.quantity}x Menu Item (ID: {item.menuItemId.slice(0, 8)})
+                  {item.quantity}x {item.menuItemName}
+                </Text>
+                <Text fontWeight="medium" color={yellow}>
+                  {(item.price * item.quantity).toLocaleString()} HUF
                 </Text>
               </HStack>
             ))}
