@@ -14,6 +14,7 @@ export interface RestaurantProfile {
   restaurantName: string;
   openingHours?: string;
   menu?: Menu;
+  description?: string;
 }
 
 export interface Menu {
