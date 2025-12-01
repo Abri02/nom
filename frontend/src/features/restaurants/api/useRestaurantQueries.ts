@@ -9,7 +9,6 @@ import type {
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
   AddFavouriteRestaurantRequest,
-  GetFavouriteRestaurantRequest,
 } from '../types/restaurant.types';
 
 // Query Keys

@@ -25,7 +25,7 @@ class UserController(
     private val removeFavouriteRestaurantUseCase: RemoveFavouriteRestaurantUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
     private val isFavouriteUseCase: IsFavouriteUseCase,
-    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val getProfileByUserIdUseCase: GetProfileByUserIdUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
 ) {
 
@@ -153,10 +153,10 @@ class UserController(
     @GetMapping("/profile")
     fun getProfile(
         @AuthenticationPrincipal user: AuthUser?
-    ): ResponseEntity<User> {
+    ): ResponseEntity<ProfileResponse> {
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-        val user = getUserByIdUseCase.getUserById(principal.id)
+        val user = getProfileByUserIdUseCase.getProfileByUserId(principal.id)
         return ResponseEntity.ok(user)
     }
 

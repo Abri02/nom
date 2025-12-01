@@ -8,7 +8,6 @@ import type {
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
   AddFavouriteRestaurantRequest,
-  GetFavouriteRestaurantRequest,
   IsFavouriteResponse,
 } from "../types/restaurant.types";
 

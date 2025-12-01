@@ -1,6 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
 import type { RestaurantUser } from "../types/restaurant.types";
-import { purple, pink, lightPurple, yellow } from "../../common/theme/colorScheme";
+import { purple, pink, yellow } from "../../common/theme/colorScheme";
 import { useAddFavouriteRestaurant, useGetFavouriteRestaurantsById, useRemoveFavouriteRestaurant } from "../api/useRestaurantQueries";
 
 

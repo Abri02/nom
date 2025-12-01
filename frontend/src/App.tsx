@@ -19,6 +19,7 @@ import { AdminDashboard } from "./features/admin/components/pages/AdminDashboard
 import { UsersManagementPage } from "./features/admin/components/pages/UsersManagementPage";
 import { OrdersManagementPage } from "./features/admin/components/pages/OrdersManagementPage";
 import { RestaurantsManagementPage } from "./features/admin/components/pages/RestaurantsManagementPage";
+import { ProfilePage } from "./features/home/components/ProfilePage";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/manage-orders" element={<ManageOrdersPage />} />
           <Route path="/deliveries" element={<CourierDeliveriesPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route
             path="/admin"
             element={
