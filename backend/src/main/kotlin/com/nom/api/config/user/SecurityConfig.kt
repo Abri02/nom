@@ -52,6 +52,8 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/users/profile").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/restaurants/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/users/favourites/menuItems").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/users/favourites/menuItem").permitAll()
 
                     .requestMatchers("/api/cart/**").authenticated()
                     .requestMatchers("/api/orders/**").authenticated()

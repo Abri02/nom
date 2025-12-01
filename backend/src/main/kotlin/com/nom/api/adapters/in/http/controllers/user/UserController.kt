@@ -179,7 +179,7 @@ class UserController(
         return ResponseEntity.ok(favourites)
     }
 
-    @GetMapping("/favourites/mennuItem")
+    @GetMapping("/favourites/menuItems")
     fun getFavouriteMenuItems(
         @AuthenticationPrincipal user: AuthUser?
     ): ResponseEntity<List<MenuItem>> {
