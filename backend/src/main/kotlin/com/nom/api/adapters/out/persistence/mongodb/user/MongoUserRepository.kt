@@ -87,6 +87,7 @@ class MongoUserRepository(
             .append("streetNumber", user.StreetNumber)
             .append("createdAt", user.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
             .append("favouriteRestaurants",  user.favouriteRestaurants)
+            .append("favouriteMenuItems", user.favouriteMenuItems)
 
 
         return doc
