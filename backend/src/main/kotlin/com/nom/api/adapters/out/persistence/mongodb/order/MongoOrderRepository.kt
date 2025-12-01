@@ -104,7 +104,7 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
             .append("customerId", order.customerId)
             .append("restaurantId", order.restaurantId)
             .append("courierId", order.courierId)
-//            .append("deliveryAddress", addressToDocument(order.deliveryAddress))
+            .append("deliveryAddress", order.deliveryAddress?.let { addressToDocument(it) })
             .append("currentLocation", order.currentLocation?.let { geoPointToDocument(it) })
             .append("totalPrice", order.totalPrice)
             .append("status", order.status.name)
@@ -117,11 +117,19 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
         return doc
     }
 
-    private fun addressToDocument(address: Address): Document =
-        Document()
+    private fun addressToDocument(address: Address): Document {
+        val doc = Document()
             .append("street", address.street)
+            .append("houseNumber", address.houseNumber)
             .append("city", address.city)
-            .append("zipCode", address.postalCode)
+            .append("postalCode", address.postalCode)
+
+        address.coordinates?.let {
+            doc.append("coordinates", geoPointToDocument(it))
+        }
+
+        return doc
+    }
 
     private fun geoPointToDocument(point: GeoPoint): Document =
         Document()
@@ -171,6 +179,9 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
         val currentLocationDoc = doc.get("currentLocation", Document::class.java)
         val currentLocation = currentLocationDoc?.let { documentToGeoPoint(it) }
 
+        val deliveryAddressDoc = doc.get("deliveryAddress", Document::class.java)
+        val deliveryAddress = deliveryAddressDoc?.let { documentToAddress(it) }
+
         val cartDoc = doc.get("cart", Document::class.java)
         val cart = cartDoc.let { documentToCart(it, customerId) }
 
@@ -180,7 +191,7 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
             restaurantId = restaurantId,
             courierId = courierId,
             cart = cart,
-            deliveryAddress = null,
+            deliveryAddress = deliveryAddress,
             currentLocation = currentLocation,
             totalPrice = totalPrice,
             status = status,
@@ -193,6 +204,19 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
             latitude = (doc.get("lat") as? Number)?.toDouble() ?: 0.0,
             longitude = (doc.get("lon") as? Number)?.toDouble() ?: 0.0
         )
+
+    private fun documentToAddress(doc: Document): Address {
+        val coordinatesDoc = doc.get("coordinates", Document::class.java)
+        val coordinates = coordinatesDoc?.let { documentToGeoPoint(it) }
+
+        return Address(
+            street = doc.getString("street"),
+            houseNumber = doc.getInteger("houseNumber"),
+            city = doc.getString("city"),
+            postalCode = doc.getString("postalCode"),
+            coordinates = coordinates
+        )
+    }
 
     private fun documentToCart(doc: Document, fallbackCustomerId: String? = null): Cart {
         val cartId = doc.getString("id")

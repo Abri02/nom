@@ -45,10 +45,15 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
     >
       <Box
         h="180px"
+<<<<<<< Updated upstream
         bg={lightPurple}
         backgroundImage={
           menuItem.imageUrl ? `url(${menuItem.imageUrl})` : undefined
         }
+=======
+        bg="gray.300"
+        backgroundImage={menuItem.imageUrl ? `url(${menuItem.imageUrl})` : undefined}
+>>>>>>> Stashed changes
         backgroundSize="cover"
         backgroundPosition="center"
         display="flex"
@@ -75,15 +80,24 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
           {menuItem.price} Ft
         </Text>
 
+<<<<<<< Updated upstream
         {menuItem.allergens.length > 0 && (
           <HStack gap={2} flexWrap="wrap" mb={3}>
             {menuItem.allergens.map((allergen) => (
               <Badge key={allergen} bgColor={yellow} color={"black"} size="md">
+=======
+        <HStack gap={2} flexWrap="wrap" mb={3} minH="32px">
+          {menuItem.allergens.length > 0 ? (
+            menuItem.allergens.map((allergen) => (
+              <Badge key={allergen} colorPalette="red" size="sm">
+>>>>>>> Stashed changes
                 {allergen}
               </Badge>
-            ))}
-          </HStack>
-        )}
+            ))
+          ) : (
+            <Box h="0" />
+          )}
+        </HStack>
 
         <NomButtons
           width="full"

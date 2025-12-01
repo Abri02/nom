@@ -55,7 +55,7 @@ export function CheckoutPage() {
 
   return (
     <Box p={6} maxW="800px" mx="auto">
-      <Heading size="3xl" color={purple} mb={6}>
+      <Heading size="3xl" color={yellow} mb={6}>
         Checkout
       </Heading>
 
@@ -73,7 +73,7 @@ export function CheckoutPage() {
           <VStack gap={3} align="stretch">
             {items.map((item) => (
               <HStack key={item.menuItem.id} justify="space-between">
-                <Text>
+                <Text color={"black"}>
                   {item.menuItem.name} x {item.quantity}
                 </Text>
                 <Text fontWeight="bold" color={yellow}>
@@ -147,7 +147,7 @@ export function CheckoutPage() {
           </Heading>
           <RadioGroup.Root
             value={paymentMethod}
-            onValueChange={(e) => setPaymentMethod(e.value as PaymentMethod)}
+            onValueChange={(details) => setPaymentMethod(details.value as PaymentMethod)}
           >
             <VStack gap={2} align="stretch">
               <RadioGroup.Item value="CREDIT_CARD">
