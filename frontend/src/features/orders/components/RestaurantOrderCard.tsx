@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import type { OrderDetail, OrderStatus } from "../types/order.types";
 import { yellow, purple, pink } from "../../common/theme/colorScheme";
+import { NomButtons } from "../../common/components/NomButton";
 
 interface RestaurantOrderCardProps {
   order: OrderDetail;
@@ -51,15 +52,15 @@ export const RestaurantOrderCard = ({
   const isReady = order.status === "READY";
 
   return (
-    <Card.Root width="100%" boxShadow="md">
+    <Card.Root width="100%" boxShadow="md" bgColor={purple}>
       <Card.Body>
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between">
             <Box>
-              <Heading size="md" color={"black"}>
+              <Heading size="md" color={yellow}>
                 Order #{order.id.slice(0, 8)}
               </Heading>
-              <Text fontSize="sm" color={purple} mt={1} fontWeight="medium">
+              <Text fontSize="sm" color={yellow} mt={1} fontWeight="medium">
                 {new Date(order.createdAt).toLocaleString()}
               </Text>
             </Box>
@@ -84,7 +85,7 @@ export const RestaurantOrderCard = ({
                 <Text fontSize="sm" color={yellow} mb={1} fontWeight="semibold">
                   Delivery Address:
                 </Text>
-                <Text fontWeight="medium" color="black">
+                <Text fontWeight="medium" color={yellow}>
                   {order.deliveryAddress.street}{" "}
                   {order.deliveryAddress.houseNumber},{" "}
                   {order.deliveryAddress.city}{" "}
@@ -96,12 +97,12 @@ export const RestaurantOrderCard = ({
           )}
 
           <VStack align="stretch" gap={2}>
-            <Text fontWeight="semibold" fontSize="sm" color={"black"}>
+            <Text fontWeight="semibold" fontSize="sm" color={yellow}>
               Items: {order.items.length} item(s)
             </Text>
             {order.items.map((item, index) => (
               <HStack key={index} justify="space-between">
-                <Text color="black">
+                <Text color={yellow}>
                   {item.quantity}x Menu Item (ID: {item.menuItemId.slice(0, 8)})
                 </Text>
               </HStack>
@@ -111,7 +112,7 @@ export const RestaurantOrderCard = ({
           <Separator />
 
           <HStack justify="space-between">
-            <Text fontWeight="bold" fontSize="lg" color={purple}>
+            <Text fontWeight="bold" fontSize="lg" color={yellow}>
               Total
             </Text>
             <Text fontWeight="bold" fontSize="xl" color={yellow}>
@@ -119,46 +120,37 @@ export const RestaurantOrderCard = ({
             </Text>
           </HStack>
 
-          {/* Action Buttons */}
           {isNew && (
             <HStack gap={2} mt={2}>
-              <Button
+              <NomButtons
                 onClick={() => onAccept?.(order.id)}
                 size="md"
-                bg={purple}
-                color="white"
-                _hover={{ bg: pink }}
+                fontWeight="500"
                 flex={1}
-              >
-                Accept Order
-              </Button>
-              <Button
+                title="Accept Order"
+              ></NomButtons>
+              <NomButtons
                 onClick={() => onDecline?.(order.id)}
                 size="md"
-                bg={yellow}
-                color="black"
-                _hover={{ opacity: 0.8 }}
-                variant="outline"
-                borderColor={yellow}
+                colorScheme="outline"
+                fontWeight="500"
                 flex={1}
-              >
-                Decline
-              </Button>
+                title="Decline Order"
+              ></NomButtons>
             </HStack>
           )}
 
           {(isPreparing || isReady) && (
-            <Button
+            <NomButtons
               onClick={() => onMarkReady?.(order.id)}
               size="md"
-              bg={purple}
-              color="white"
-              _hover={{ bg: pink }}
+              colorScheme="primary"
+              fontWeight="500"
               width="100%"
+              flex={1}
               mt={2}
-            >
-              Mark as Ready for Pickup
-            </Button>
+              title="Mark as Ready for Pickup"
+            ></NomButtons>
           )}
         </VStack>
       </Card.Body>

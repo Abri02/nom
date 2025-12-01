@@ -1,6 +1,5 @@
 package com.nom.api.application.`use-cases`.cart
 
-import com.nom.api.domain.cart.entities.Cart
 import com.nom.api.domain.cart.ports.`in`.CartDetails
 import com.nom.api.domain.cart.ports.`in`.CartItemDetails
 import com.nom.api.domain.cart.ports.`in`.GetCartUseCase
@@ -43,7 +42,6 @@ class GetCartUseCaseImpl(private val cartRepository: CartRepository,
             val menuItem = menu?.menuItems?.firstOrNull { it.id == item.menuItemId }
 
             if (menuItem == null) {
-                // ha közben törölték a menüből, kihagyhatod vagy logolhatod
                 null
             } else {
                 val lineTotal = menuItem.price * item.quantity

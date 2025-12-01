@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 @Service
 class ManageCourierLocationUseCaseImpl(
     private val courierPositionRepository: CourierPositionRepository,
-    private val orderRepository: OrderRepository // Kell a rendelés ellenőrzéséhez
+    private val orderRepository: OrderRepository
 ) : ManageCourierLocationUseCase {
 
     @Transactional

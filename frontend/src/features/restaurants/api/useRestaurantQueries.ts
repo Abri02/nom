@@ -111,6 +111,14 @@ export const useGetFavouriteRestaurants = () => {
   });
 };
 
+export const useGetFavouriteRestaurantsById = (restaurantId: string) => {
+  return useQuery<boolean, Error>({
+    queryKey: [...restaurantKeys.favourites(), restaurantId],
+    queryFn: () => restaurantApi.getFavouriteRestaurantById(restaurantId),
+    enabled: !!restaurantId, 
+  });
+};
+
 export const useAddFavouriteRestaurant = () => {
   const queryClient = useQueryClient();
 

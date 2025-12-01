@@ -13,6 +13,8 @@ import { CourierDeliveryCard } from "../CourierDeliveryCard";
 import type { OrderDetail } from "../../types/order.types";
 import { purple, lightPurple } from "../../../common/theme/colorScheme";
 import { useAuth } from "../../../auth/hooks/useAuthContext";
+import { useState } from "react";
+import { NomPopUp } from "../../../common/components/NomPopUp";
 
 export const CourierDeliveriesPage = () => {
   const { user } = useAuth();
@@ -20,6 +22,9 @@ export const CourierDeliveriesPage = () => {
   const { data: deliveries, isLoading, error } = useCourierDeliveries();
   const pickupMutation = usePickupOrder();
   const deliverMutation = useDeliverOrder();
+
+  const [isPopUpOpen, setIsPopUpOpen] = useState(false);
+  const [orderToDeliver, setOrderToDeliver] = useState<string | null>(null);
 
   const handlePickup = async (orderId: string) => {
     try {
@@ -29,10 +34,21 @@ export const CourierDeliveriesPage = () => {
     }
   };
 
-  const handleDeliver = async (orderId: string) => {
-    if (window.confirm("Confirm delivery completion?")) {
+  const handleDeliver = (orderId: string) => {
+    setOrderToDeliver(orderId);
+    setIsPopUpOpen(true);
+  };
+
+  const handleClosePopUp = () => {
+    setIsPopUpOpen(false);
+    setOrderToDeliver(null);
+  };
+
+  const confirmDeliver = async () => {
+    if (orderToDeliver) {
       try {
-        await deliverMutation.mutateAsync(orderId);
+        await deliverMutation.mutateAsync(orderToDeliver);
+        handleClosePopUp(); 
       } catch (error) {
         console.error("Failed to mark order as delivered:", error);
       }
@@ -70,7 +86,6 @@ export const CourierDeliveriesPage = () => {
     );
   }
 
-  // Filter orders to show only those assigned to this courier
   const courierOrders = deliveries?.filter((order) =>
     order.courierId === user?.id
   ) || [];
@@ -199,6 +214,23 @@ export const CourierDeliveriesPage = () => {
           </Tabs.Content>
         </Tabs.Root>
       </VStack>
+
+      <NomPopUp
+        isOpen={isPopUpOpen}
+        onClose={handleClosePopUp}
+        onConfirm={confirmDeliver}
+        title="Confirm Delivery"
+          confirmColorScheme="primary"
+        description={
+          <Text>
+            Are you sure you want to mark order as delivered?
+          </Text>
+        }
+        confirmButtonTitle="Confirm Delivery"
+          cancelButtonTitle="Cancel"
+        isSubmitting={deliverMutation.isPending}
+        size="sm"
+      />
     </Container>
   );
 };

@@ -23,7 +23,6 @@ class CourierController(
         if (email == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val user = userRepository.findByEmail(email) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-
         manageCourierLocationUseCase.updatePosition(
             courierId = user.id!!,
             lat = request.lat,

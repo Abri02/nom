@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const loggedInUser: User = {
         id: response.id,
         email: response.email || email,
-        role: response.role,
+        role: response.role
       };
 
       if (response.token) {

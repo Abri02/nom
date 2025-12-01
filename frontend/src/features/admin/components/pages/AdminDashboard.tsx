@@ -14,7 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Users, ShoppingBag, Package, Store } from "lucide-react";
 import { useAllOrders, useAllUsers } from "../../api/useAdminQueries";
-import { purple, yellow } from "../../../common/theme/colorScheme";
+import { yellow } from "../../../common/theme/colorScheme";
 
 export const AdminDashboard = () => {
   const navigate = useNavigate();

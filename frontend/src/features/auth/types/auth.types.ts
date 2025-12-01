@@ -37,6 +37,7 @@ export interface AuthResponse {
   message: string;
   role: UserType;
   id?: string;
+  name?: string;
 }
 
 type UserType = "CUSTOMER" | "RESTAURANT" | "COURIER" | "ADMIN" | "UNKNOWN";

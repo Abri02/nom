@@ -7,6 +7,7 @@ export interface RestaurantUser {
   description?: string;
   isSuspended: boolean;
   createdAt: string;
+  image?: string;
 }
 
 export interface RestaurantProfile {
@@ -51,4 +52,8 @@ export interface UpdateMenuItemRequest {
 
 export interface AddFavouriteRestaurantRequest {
   restaurantId: string;
+}
+
+export interface IsFavouriteResponse {
+  isFavourite: boolean;
 }

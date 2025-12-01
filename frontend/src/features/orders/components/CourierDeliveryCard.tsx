@@ -14,6 +14,7 @@ import { MapPin } from "lucide-react";
 import type { OrderDetail, OrderStatus } from "../types/order.types";
 import { OrderTrackingMap } from "./OrderTrackingMap";
 import { yellow, purple, pink } from "../../common/theme/colorScheme";
+import { NomButtons } from "../../common/components/NomButton";
 
 interface CourierDeliveryCardProps {
   order: OrderDetail;
@@ -53,12 +54,12 @@ export const CourierDeliveryCard = ({
   const isOnDelivery = order.status === "ON_DELIVERY";
 
   return (
-    <Card.Root width="100%" boxShadow="md">
+    <Card.Root width="100%" boxShadow="md" bgColor={purple}>
       <Card.Body>
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between">
             <Box>
-              <Heading size="md" color={"black"}>
+              <Heading size="lg" color={yellow}>
                 {order.restaurantName}
               </Heading>
               <Text fontSize="sm" color={yellow} mt={1} fontWeight="medium">
@@ -80,7 +81,6 @@ export const CourierDeliveryCard = ({
 
           <Separator />
 
-          {/* Restaurant Address */}
           <Box>
             <HStack gap={2} mb={1}>
               <MapPin size={16} color={yellow} />
@@ -88,12 +88,11 @@ export const CourierDeliveryCard = ({
                 Pick up from:
               </Text>
             </HStack>
-            <Text fontWeight="medium" ml={6} color="black">
+            <Text fontWeight="medium" ml={6} color={yellow}>
               {order.restaurantLocation?.address || "Restaurant address"}
             </Text>
           </Box>
 
-          {/* Delivery Address */}
           {order.deliveryAddress && (
             <Box>
               <HStack gap={2} mb={1}>
@@ -112,55 +111,41 @@ export const CourierDeliveryCard = ({
 
           <Separator />
 
-          {/* Order Items Summary */}
           <Box>
-            <Text fontSize="sm" color={purple} mb={1} fontWeight="semibold">
+            <Text fontSize="sm" color={yellow} mb={1} fontWeight="semibold">
               Items: {order.items.length} item(s)
             </Text>
-            <Text fontWeight="bold" fontSize="lg" color={"black"}>
+            <Text fontWeight="bold" fontSize="lg" color={yellow}>
               Total: {order.totalPrice.toLocaleString()} HUF
             </Text>
           </Box>
 
-          {/* Action Buttons */}
           <HStack gap={2}>
-            <Button
+            <NomButtons
               onClick={() => setShowMap(!showMap)}
               size="sm"
-              bg={yellow}
-              color="black"
-              _hover={{ opacity: 0.8 }}
-              variant="outline"
-              borderColor={yellow}
               flex={1}
-            >
-              {showMap ? "Hide Map" : "View Map"}
-            </Button>
+              title={showMap ? "Hide Map" : "View Map"}
+            ></NomButtons>
 
             {isReady && onPickup && (
-              <Button
+              <NomButtons
                 onClick={() => onPickup(order.id)}
                 size="sm"
-                bg={purple}
-                color="black"
-                _hover={{ bg: pink }}
+                colorScheme="outline"
                 flex={1}
-              >
-                Pick Up Order
-              </Button>
+                title="Pick Up Order"
+              ></NomButtons>
             )}
 
             {isOnDelivery && onDeliver && (
-              <Button
+              <NomButtons
                 onClick={() => onDeliver(order.id)}
                 size="sm"
-                bg={purple}
-                color="black"
-                _hover={{ bg: pink }}
+                colorScheme="outline"
                 flex={1}
-              >
-                Mark as Delivered
-              </Button>
+                title="Mark as Delivered"
+              ></NomButtons>
             )}
           </HStack>
 
