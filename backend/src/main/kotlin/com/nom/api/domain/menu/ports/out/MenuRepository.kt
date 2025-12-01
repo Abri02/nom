@@ -3,6 +3,7 @@ package com.nom.api.domain.menu.ports.out
 import com.nom.api.domain.menu.entities.Menu
 import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
+import com.nom.api.domain.user.entities.FavouriteMenuItem
 
 interface MenuRepository {
 
@@ -37,5 +38,8 @@ interface MenuRepository {
 
     fun findAllRestaurantByIdList(list: List<String>) : List<RestaurantProfile>
 
+    fun findAllMenuItemByIdList(list: List<FavouriteMenuItem>): List<MenuItem>
+
     fun removeMenuItem(restaurantId: String, menuItemId: String)
 }
+

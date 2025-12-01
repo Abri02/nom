@@ -19,6 +19,7 @@ data class User(
     val isSuspended: Boolean = false,
     val cart: Cart?,
     val favouriteRestaurants: MutableList<String> = mutableListOf(),
+    val favouriteMenuItems: MutableList<FavouriteMenuItem> = mutableListOf(),
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) {
@@ -51,3 +52,8 @@ enum class UserRole {
     ADMIN,
     UNKNOWN;
 }
+
+data class FavouriteMenuItem(
+    val menuItemId: String,
+    val restaurantId: String,
+)

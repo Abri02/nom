@@ -8,6 +8,7 @@ import com.nom.api.domain.menu.entities.Menu
 import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.menu.ports.out.MenuRepository
+import com.nom.api.domain.user.entities.FavouriteMenuItem
 import org.bson.Document
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
@@ -126,6 +127,32 @@ class MongoMenuRepository(
             .find(Filters.`in`("_id", list))
             .map { doc -> documentToRestaurantProfile(doc) }
             .toList()
+    }
+
+    override fun findAllMenuItemByIdList(list: List<FavouriteMenuItem>): List<MenuItem> {
+        if (list.isEmpty()) return emptyList()
+
+        val favouritePairs: Set<Pair<String, String>> = list
+            .map { it.restaurantId to it.menuItemId }
+            .toSet()
+
+        val result = mutableListOf<MenuItem>()
+
+        val cursor = collection.find()
+
+        for (doc in cursor) {
+            val restaurantId = doc.getString("_id") ?: continue
+
+            val profile = documentToRestaurantProfile(doc)
+
+            val matchingItems = profile.menu.menuItems.filter { menuItem ->
+                favouritePairs.contains(restaurantId to menuItem.id)
+            }
+
+            result.addAll(matchingItems)
+        }
+
+        return result
     }
 
     override fun removeMenuItem(restaurantId: String, menuItemId: String) {
