@@ -15,7 +15,7 @@ data class User(
     val Street: String,
     val StreetNumber: String,
     val role: UserRole,
-    val description: String? = null, //pl ahhoz hogy milyen konyha
+    val description: String? = null,
     val isSuspended: Boolean = false,
     val cart: Cart?,
     val favouriteRestaurants: MutableList<String> = mutableListOf(),
@@ -29,10 +29,14 @@ data class User(
 
     }
 
-    fun toAddress(): Address {
+    fun toAddress(): Address? {
+        if (Street.isBlank() || City.isBlank() || ZipCode.isBlank() || StreetNumber.isBlank()) {
+            return null
+        }
+
+        val houseNumber = StreetNumber.toIntOrNull() ?: return null
         return Address(
-            houseNumber = StreetNumber.toIntOrNull()
-                ?: throw IllegalStateException("Invalid house number for user $id: $StreetNumber"),
+            houseNumber = houseNumber,
             street = Street,
             city = City,
             postalCode = ZipCode

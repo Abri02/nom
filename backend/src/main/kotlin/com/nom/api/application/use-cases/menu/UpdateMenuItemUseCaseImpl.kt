@@ -22,8 +22,6 @@ class UpdateMenuItemUseCaseImpl(
             throw IllegalStateException("Only ADMIN or RESTAURANT users can remove menu items")
         }
 
-        // opcionálisan ellenőrizheted, hogy az étterem létezik-e, de
-        // a MongoMenuRepository úgyis dob, ha nincs ilyen item
         val item = MenuItem(
             id = request.menuItemId,
             name = request.name,

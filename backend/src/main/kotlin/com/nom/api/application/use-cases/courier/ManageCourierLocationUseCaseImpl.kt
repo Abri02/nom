@@ -37,7 +37,6 @@ class ManageCourierLocationUseCaseImpl(
     }
 
     override fun getCourierPositionByOrderId(orderId: String, customerId: String): CourierPosition {
-
         val order = orderRepository.findById(orderId)
             ?: throw IllegalArgumentException("Rendelés nem található")
 

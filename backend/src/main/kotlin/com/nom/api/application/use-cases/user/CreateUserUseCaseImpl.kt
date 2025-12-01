@@ -55,7 +55,7 @@ class CreateUserUseCaseImpl(
                 profile = RestaurantProfile(
                     restaurantName = profile.restaurantName,
                     openingHours = profile.openingHours,
-                    menu = Menu() // induláskor üres menü
+                    menu = Menu()
                 )
             )
         }
