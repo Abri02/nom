@@ -11,13 +11,13 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import type { OrderDetail, OrderStatus } from "../types/order.types";
+import type { Order, OrderStatus } from "../types/order.types";
 import { OrderTrackingMap } from "./OrderTrackingMap";
 import { yellow, purple, pink } from "../../common/theme/colorScheme";
 import { NomButtons } from "../../common/components/NomButton";
 
 interface CourierDeliveryCardProps {
-  order: OrderDetail;
+  order: Order;
   onPickup?: (orderId: string) => void;
   onDeliver?: (orderId: string) => void;
 }
@@ -36,7 +36,7 @@ const getStatusStyle = (status: OrderStatus): StatusStyle => {
     DELIVERED: { bg: "#C6F6D5", color: "#276749" }, // Green
     CANCELLED: { bg: "#FED7D7", color: "#C53030" }, // Red
   };
-  return styles[status];
+  return styles[status] || { bg: "#E2E8F0", color: "#2D3748" }; // Gray fallback
 };
 
 const formatStatus = (status: OrderStatus): string => {
@@ -102,9 +102,7 @@ export const CourierDeliveryCard = ({
                 </Text>
               </HStack>
               <Text fontWeight="medium" ml={6} color="white">
-                {order.deliveryAddress.street}{" "}
-                {order.deliveryAddress.houseNumber},{" "}
-                {order.deliveryAddress.city} {order.deliveryAddress.postalCode}
+                {order.deliveryAddress}
               </Text>
             </Box>
           )}
@@ -132,7 +130,9 @@ export const CourierDeliveryCard = ({
               <NomButtons
                 onClick={() => onPickup(order.id)}
                 size="sm"
-                colorScheme="outline"
+                bg={purple}
+                color="white"
+                _hover={{ bg: pink }}
                 flex={1}
                 title="Pick Up Order"
               ></NomButtons>

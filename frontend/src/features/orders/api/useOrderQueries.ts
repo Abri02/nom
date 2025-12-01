@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderApi } from "./orderApi";
 import type { OrderStatus } from "../types/order.types";
+import { mapOrderDetailsToOrders } from "../utils/orderMappers";
 
 export const orderQueryKeys = {
   all: ["orders"] as const,
@@ -15,8 +16,8 @@ export const useUserOrders = () => {
   return useQuery({
     queryKey: orderQueryKeys.list(),
     queryFn: async () => {
-      const order = await orderApi.getCustomerOrder();
-      return order ? [order] : [];
+      const orderDetails = await orderApi.getCustomerOrder();
+      return mapOrderDetailsToOrders(orderDetails);
     },
   });
 };
@@ -130,7 +131,10 @@ export const useMarkOrderReady = () => {
 export const useCourierDeliveries = () => {
   return useQuery({
     queryKey: [...orderQueryKeys.all, "courier"],
-    queryFn: () => orderApi.getOrdersForCourier(),
+    queryFn: async () => {
+      const orderDetails = await orderApi.getOrdersForCourier();
+      return mapOrderDetailsToOrders(orderDetails);
+    },
   });
 };
 

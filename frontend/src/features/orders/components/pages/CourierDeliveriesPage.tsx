@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useCourierDeliveries, usePickupOrder, useDeliverOrder } from "../../api/useOrderQueries";
 import { CourierDeliveryCard } from "../CourierDeliveryCard";
-import type { OrderDetail } from "../../types/order.types";
+import type { Order } from "../../types/order.types";
 import { purple, lightPurple } from "../../../common/theme/colorScheme";
 import { useAuth } from "../../../auth/hooks/useAuthContext";
 import { useState } from "react";
@@ -94,7 +94,7 @@ export const CourierDeliveriesPage = () => {
   const activeDeliveries = courierOrders.filter((order) => order.status === "ON_DELIVERY");
   const completedDeliveries = courierOrders.filter((order) => order.status === "DELIVERED");
 
-  const renderDeliveriesList = (deliveriesList: OrderDetail[], emptyMessage: string) => {
+  const renderDeliveriesList = (deliveriesList: Order[], emptyMessage: string) => {
     if (deliveriesList.length === 0) {
       return (
         <Center py={12}>

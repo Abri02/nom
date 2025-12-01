@@ -12,8 +12,8 @@ export const orderApi = {
     return response.data;
   },
 
-  getCustomerOrder: async (): Promise<OrderDetail> => {
-    const response = await apiClient.get<OrderDetail>("/api/orders/me");
+  getCustomerOrder: async (): Promise<OrderDetail[]> => {
+    const response = await apiClient.get<OrderDetail[]>("/api/orders/me");
     return response.data;
   },
 

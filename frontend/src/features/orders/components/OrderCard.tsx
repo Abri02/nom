@@ -34,7 +34,7 @@ const getStatusStyle = (status: OrderStatus): StatusStyle => {
     DELIVERED: { bg: "#C6F6D5", color: "#276749" }, // Green
     CANCELLED: { bg: "#FED7D7", color: "#C53030" }, // Red
   };
-  return styles[status];
+  return styles[status] || { bg: "#E2E8F0", color: "#2D3748" }; // Gray fallback
 };
 
 const formatStatus = (status: OrderStatus): string => {

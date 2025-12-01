@@ -27,13 +27,21 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface OrderItemDetail {
+  restaurantId: string;
+  menuItemId: string;
+  menuItemName: string;
+  quantity: number;
+  price: number;
+}
+
 export interface OrderDetail {
   id: string;
   customerId: string;
   restaurantId: string;
   restaurantName: string;
   courierId?: string;
-  items: CartItem[];
+  items: OrderItemDetail[];
   deliveryAddress?: Address;
   currentLocation?: GeoPoint;
   totalPrice: number;
