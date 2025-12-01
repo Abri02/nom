@@ -1,6 +1,8 @@
 package com.nom.api.adapters.`in`.http.controllers
 
+import com.nom.api.application.`use-cases`.user.IsFavouriteMenuItemUseCaseImpl
 import com.nom.api.domain.menu.entities.Menu
+import com.nom.api.domain.menu.entities.MenuItem
 import com.nom.api.domain.menu.entities.RestaurantProfile
 import com.nom.api.domain.user.entities.UserRole
 import com.nom.api.domain.ports.`in`.CreateUserRequest
@@ -24,6 +26,10 @@ class UserController(
     private val isFavouriteUseCase: IsFavouriteUseCase,
     private val getProfileByUserIdUseCase: GetProfileByUserIdUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
+    private val getFavouriteMenuItemsUseCase: GetFavouriteMenuItemsUseCase,
+    private val addFavouriteMenuItemUseCase: AddFavouriteMenuItemUseCase,
+    private val removeFavouriteMenuItemUseCase: RemoveFavouriteMenuItemUseCase,
+    private val isFavouriteMenuItemUseCase: IsFavouoriteMenuItemUseCase,
 ) {
 
     @PostMapping
@@ -137,6 +143,32 @@ class UserController(
         }
     }
 
+    @PostMapping("/favourites/menuItem")
+    fun addFavouriteMenuItem(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: AddFavouriteMenuItemRequest
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        return try {
+            addFavouriteMenuItemUseCase.addFavouriteMenuItem(
+                restaurantId = request.restaurantId,
+                menuItemId = request.menuItemId,
+                userId = principal.id
+            )
+
+            val favourites = getFavouriteMenuItemsUseCase.getMenuItems(principal.id)
+            ResponseEntity.ok(favourites)
+
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+    }
+
     @GetMapping("/favourites/restaurants")
     fun getFavouriteRestaurants(
         @AuthenticationPrincipal user: AuthUser?
@@ -144,6 +176,16 @@ class UserController(
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
         val favourites = getFavouriteRestaurantsUseCase.getFavourites(principal.id)
+        return ResponseEntity.ok(favourites)
+    }
+
+    @GetMapping("/favourites/mennuItem")
+    fun getFavouriteMenuItems(
+        @AuthenticationPrincipal user: AuthUser?
+    ): ResponseEntity<List<MenuItem>> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        val favourites = getFavouriteMenuItemsUseCase.getMenuItems(principal.id)
         return ResponseEntity.ok(favourites)
     }
 
@@ -215,6 +257,33 @@ class UserController(
         }
     }
 
+    @DeleteMapping("/favourites/menuItem")
+    fun removeFavouriteMenuItem(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestBody request: AddFavouriteMenuItemRequest
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        return try {
+            removeFavouriteMenuItemUseCase.removeFavouriteMenuItem(
+                userId = principal.id,
+                menuItemId = request.menuItemId,
+                restaurantId = request.restaurantId,
+            )
+
+            val favourites = getFavouriteMenuItemsUseCase.getMenuItems(principal.id)
+
+            ResponseEntity.ok(favourites)
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+    }
+
     @GetMapping("/favourites")
     fun isFavourite(
         @AuthenticationPrincipal user: AuthUser?,
@@ -225,6 +294,32 @@ class UserController(
         return try {
             val result = isFavouriteUseCase.isFavourite(
                 restaurantId = restaurantId,
+                userId = principal.id
+            )
+
+            ResponseEntity.ok(IsFavouriteResponse(isFavourite = result))
+
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse(e.message ?: "Bad request"))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse("Internal server error"))
+        }
+    }
+
+    @GetMapping("/favourites/menuItem")
+    fun isFavouriteMenuItem(
+        @AuthenticationPrincipal user: AuthUser?,
+        @RequestParam restaurantId: String,
+        @RequestParam menuItemId: String
+    ): ResponseEntity<Any> {
+        val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
+        return try {
+            val result = isFavouriteMenuItemUseCase.isFavourite(
+                restaurantId = restaurantId,
+                menuItemId = menuItemId,
                 userId = principal.id
             )
 
@@ -291,4 +386,9 @@ data class AddFavouriteRestaurantRequest(
 
 data class IsFavouriteResponse(
     val isFavourite: Boolean
+)
+
+data class AddFavouriteMenuItemRequest(
+    val restaurantId: String,
+    val menuItemId: String
 )
