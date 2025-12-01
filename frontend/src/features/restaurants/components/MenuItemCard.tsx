@@ -1,3 +1,4 @@
+
 import { Box, Text, HStack, Badge, Button } from "@chakra-ui/react";
 import type { MenuItem } from "../types/restaurant.types";
 import {
@@ -9,6 +10,11 @@ import {
 import { useCart } from "../../cart/hooks/useCartContext";
 import { useRestaurant } from "../hooks/useRestaurantContext";
 import { NomButtons } from "../../common/components/NomButton";
+import {
+  useAddFavouriteMenuItem,
+  useIsFavouriteMenuItem,
+  useRemoveFavouriteMenuItem,
+} from "../api/useRestaurantQueries"; 
 
 interface MenuItemCardProps {
   readonly menuItem: MenuItem;
@@ -17,6 +23,17 @@ interface MenuItemCardProps {
 export function MenuItemCard({ menuItem }: MenuItemCardProps) {
   const { addItem } = useCart();
   const { selectedRestaurant, selectedRestaurantId } = useRestaurant();
+
+  const addFavouriteMenuItem = useAddFavouriteMenuItem();
+  const removeFavouriteMenuItem = useRemoveFavouriteMenuItem();
+  const isFavouriteMenuItemQuery = useIsFavouriteMenuItem(
+    selectedRestaurantId || "",
+    menuItem.id
+  );
+
+  const isFavourite = isFavouriteMenuItemQuery.data === true;
+  const isPending =
+    addFavouriteMenuItem.isPending || removeFavouriteMenuItem.isPending;
 
   const handleAddToCart = () => {
     if (selectedRestaurant && selectedRestaurantId) {
@@ -28,6 +45,26 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
     }
   };
 
+  const handleFavouriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!selectedRestaurantId) return;
+
+    const request = {
+      restaurantId: selectedRestaurantId,
+      menuItemId: menuItem.id,
+    };
+
+    if (isFavourite) {
+      removeFavouriteMenuItem.mutate(request, {
+        onSuccess: () => isFavouriteMenuItemQuery.refetch(),
+      });
+    } else {
+      addFavouriteMenuItem.mutate(request, {
+        onSuccess: () => isFavouriteMenuItemQuery.refetch(),
+      });
+    }
+  };
+
   return (
     <Box
       borderWidth="3px"
@@ -36,6 +73,7 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
       overflow="hidden"
       bg={purple}
       boxShadow="lg"
+      position="relative" 
       _hover={{
         transform: "translateY(-6px)",
         boxShadow: "xl",
@@ -43,6 +81,27 @@ export function MenuItemCard({ menuItem }: MenuItemCardProps) {
         transition: "all 0.3s",
       }}
     >
+      {selectedRestaurantId && (
+        <Box
+          as="button"
+          aria-label="Toggle favourite menu item"
+          position="absolute"
+          top={4}
+          right={4}
+          fontSize="2xl"
+          onClick={handleFavouriteClick}
+          cursor="pointer"
+          _hover={{ transform: "scale(1.2)" }}
+          transition="transform 0.2s"
+          bg="transparent"
+          border="none"
+          zIndex={10}
+          opacity={isPending ? 0.5 : 1}
+        >
+          {isFavourite ? "❤️" : "🤍"}
+        </Box>
+      )}
+
       <Box
         h="180px"
         bg={lightPurple}

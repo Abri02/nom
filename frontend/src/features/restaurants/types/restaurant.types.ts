@@ -55,6 +55,11 @@ export interface AddFavouriteRestaurantRequest {
   restaurantId: string;
 }
 
+export interface AddFavouriteMenuItemRequest {
+  restaurantId: string;
+  menuitemId: string;
+}
+
 export interface IsFavouriteResponse {
   isFavourite: boolean;
 }

@@ -8,6 +8,7 @@ import type {
   CreateMenuItemRequest,
   UpdateMenuItemRequest,
   AddFavouriteRestaurantRequest,
+  AddFavouriteMenuItemRequest,
   IsFavouriteResponse,
 } from "../types/restaurant.types";
 
@@ -104,4 +105,34 @@ export const removeFavouriteRestaurant = async (
   request: AddFavouriteRestaurantRequest
 ): Promise<void> => {
   await apiClient.delete("/api/users/favourites", { data: request });
+};
+
+export const getFavouriteMenuItems = async (): Promise<MenuItem[]> => {
+  const { data } = await apiClient.get<MenuItem[]>(
+    "/api/users/favourites/menuItems"
+  );
+  return data;
+};
+
+export const addFavouriteMenuItem = async (
+  request: AddFavouriteMenuItemRequest
+): Promise<void> => {
+  await apiClient.post("/api/users/favourites/menuItem", request);
+};
+
+export const removeFavouriteMenuItem = async (
+  request: AddFavouriteMenuItemRequest
+): Promise<void> => {
+  await apiClient.delete("/api/users/favourites/menuItem", { data: request });
+};
+
+export const isFavouriteMenuItem = async (
+  restaurantId: string,
+  menuItemId: string
+): Promise<boolean> => {
+  const { data } = await apiClient.get<IsFavouriteResponse>(
+    "/api/users/favourites/menuItem",
+    { params: { restaurantId, menuItemId } }
+  );
+  return data.isFavourite;
 };

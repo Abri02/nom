@@ -11,7 +11,6 @@ import type {
   AddFavouriteRestaurantRequest,
 } from '../types/restaurant.types';
 
-// Query Keys
 export const restaurantKeys = {
   all: ['restaurants'] as const,
   lists: () => [...restaurantKeys.all, 'list'] as const,
@@ -20,6 +19,7 @@ export const restaurantKeys = {
   detail: (id: string) => [...restaurantKeys.details(), id] as const,
   menu: (id: string) => [...restaurantKeys.all, 'menu', id] as const,
   favourites: () => [...restaurantKeys.all, 'favourites'] as const,
+  favouriteMenuItems: () => [...restaurantKeys.all, 'favouriteMenuItems'] as const,
 };
 
 export const useGetAllRestaurants = () => {
@@ -137,6 +137,44 @@ export const useRemoveFavouriteRestaurant = () => {
     mutationFn: restaurantApi.removeFavouriteRestaurant,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: restaurantKeys.favourites() });
+    },
+  });
+};
+
+export const useGetFavouriteMenuItems = () => {
+  return useQuery<MenuItem[], Error>({
+    queryKey: restaurantKeys.favouriteMenuItems(),
+    queryFn: restaurantApi.getFavouriteMenuItems,
+  });
+};
+
+export const useIsFavouriteMenuItem = (restaurantId: string, menuItemId: string) => {
+  return useQuery<boolean, Error>({
+    queryKey: [...restaurantKeys.favouriteMenuItems(), restaurantId, menuItemId],
+    queryFn: () => restaurantApi.isFavouriteMenuItem(restaurantId, menuItemId),
+    enabled: !!restaurantId && !!menuItemId, 
+  });
+};
+
+
+export const useAddFavouriteMenuItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, AddFavouriteMenuItemRequest>({
+    mutationFn: restaurantApi.addFavouriteMenuItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: restaurantKeys.favouriteMenuItems() });
+    },
+  });
+};
+
+export const useRemoveFavouriteMenuItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, AddFavouriteMenuItemRequest>({
+    mutationFn: restaurantApi.removeFavouriteMenuItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: restaurantKeys.favouriteMenuItems() });
     },
   });
 };

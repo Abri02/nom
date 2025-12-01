@@ -20,6 +20,7 @@ import { UsersManagementPage } from "./features/admin/components/pages/UsersMana
 import { OrdersManagementPage } from "./features/admin/components/pages/OrdersManagementPage";
 import { RestaurantsManagementPage } from "./features/admin/components/pages/RestaurantsManagementPage";
 import { ProfilePage } from "./features/home/components/ProfilePage";
+import { FavouriteMenusPage } from "./features/restaurants/components/pages/FavouriteMenusPage";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/restaurants" element={<RestaurantPage />} />
           <Route path="/favourites" element={<FavouritesPage />} />
+          <Route path="/favourite-menu-items" element={<FavouriteMenusPage />} />
           <Route path="/restaurant/:id" element={<MenuPage />} />
           <Route path="/my-restaurant" element={<MyRestaurantPage />} />
           <Route path="/orders" element={<OrdersPage />} />
