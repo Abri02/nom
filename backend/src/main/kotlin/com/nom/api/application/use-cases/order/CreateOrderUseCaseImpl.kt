@@ -10,6 +10,7 @@ import com.nom.api.domain.order.entities.OrderStatus
 import com.nom.api.domain.order.entities.PaymentMethod // <-- Fontos
 import com.nom.api.domain.order.ports.`in`.CreateOrderUseCase
 import com.nom.api.domain.order.ports.`in`.OrderDetail
+import com.nom.api.domain.order.ports.`in`.OrderItemDetail
 import com.nom.api.domain.order.ports.out.OrderRepository
 import com.nom.api.domain.payment.ports.out.PaymentGateway // <-- Fontos: Az új port
 import com.nom.api.domain.ports.out.UserRepository
@@ -116,13 +117,36 @@ class CreateOrderUseCaseImpl(
 
         clearCartUseCase.clearCart(userId)
 
+        // Enrich cart items with menu item details
+        val enrichedItems = cart.items.mapNotNull { cartItem ->
+            val menu = menusByRestaurant[cartItem.restaurantId]
+            val menuItem = menu?.menuItems?.firstOrNull { it.id == cartItem.menuItemId }
+            if (menuItem != null) {
+                OrderItemDetail(
+                    restaurantId = cartItem.restaurantId,
+                    menuItemId = cartItem.menuItemId,
+                    menuItemName = menuItem.name,
+                    quantity = cartItem.quantity,
+                    price = menuItem.price
+                )
+            } else {
+                OrderItemDetail(
+                    restaurantId = cartItem.restaurantId,
+                    menuItemId = cartItem.menuItemId,
+                    menuItemName = "Unknown Item",
+                    quantity = cartItem.quantity,
+                    price = 0
+                )
+            }
+        }.toMutableList()
+
         return OrderDetail(
             id  = saved.id,
             customerId = saved.customerId,
             restaurantId = saved.restaurantId,
             restaurantName = restaurantProfile.restaurantName,
             courierId = saved.courierId,
-            items = cart.items.toMutableList(),
+            items = enrichedItems,
             deliveryAddress = deliveryAddress,
             currentLocation = currentLocation,
             totalPrice = saved.totalPrice,

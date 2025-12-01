@@ -8,5 +8,5 @@ import com.nom.api.domain.order.entities.OrderStatus
 import java.time.LocalDateTime
 
 interface GetOrderByUserUseCase {
-     fun getOrder(userId: String): OrderDetail?
+     fun getOrder(userId: String): List<OrderDetail>
 }

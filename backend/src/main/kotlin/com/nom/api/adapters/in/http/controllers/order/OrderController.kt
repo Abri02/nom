@@ -44,13 +44,12 @@ class OrderController(
     @GetMapping("/me")
     fun getCustomerOrder(
         @AuthenticationPrincipal user: AuthUser?
-    ): ResponseEntity<OrderDetail> {
+    ): ResponseEntity<List<OrderDetail>> {
         val principal = user ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
-        val order = getOrderByUserUseCaseImpl.getOrder(principal.id)
-            ?: return ResponseEntity.notFound().build()
+        val orders = getOrderByUserUseCaseImpl.getOrder(principal.id)
 
-        return ResponseEntity.ok(order)
+        return ResponseEntity.ok(orders)
     }
 
     @GetMapping("/{orderId}")

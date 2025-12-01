@@ -73,6 +73,12 @@ class MongoOrderRepository(@Qualifier("orderCollection") private val collection:
         return doc?.let { documentToOrder(it) }
     }
 
+    override fun findAllByCustomerId(customerId: String): List<Order> {
+        return collection.find(Filters.eq("customerId", customerId))
+            .map { documentToOrder(it) }
+            .toList()
+    }
+
     override fun findAllByCourierId(courierId: String): List<Order> {
         return collection.find(Filters.eq("courierId", courierId))
             .map { documentToOrder(it) }

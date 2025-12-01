@@ -13,7 +13,7 @@ data class OrderDetail(
     val restaurantId: String,
     val restaurantName: String,
     var courierId: String? = null,
-    val items: MutableList<CartItem> = mutableListOf(),
+    val items: MutableList<OrderItemDetail> = mutableListOf(),
     val deliveryAddress: Address? = null,
     var currentLocation: GeoPoint? = null,
     val totalPrice: Long,
