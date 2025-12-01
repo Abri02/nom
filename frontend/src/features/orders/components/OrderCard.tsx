@@ -13,6 +13,7 @@ import { useState } from "react";
 import type { Order, OrderStatus } from "../types/order.types";
 import { OrderTrackingMap } from "./OrderTrackingMap";
 import { yellow, purple } from "../../common/theme/colorScheme";
+import { NomButtons } from "../../common/components/NomButton";
 
 interface OrderCardProps {
   order: Order;
@@ -49,11 +50,11 @@ export const OrderCard = ({ order, onCancelOrder }: OrderCardProps) => {
   );
 
   return (
-    <Card.Root width="100%" boxShadow="md">
+    <Card.Root width="100%" boxShadow="md" bgColor={`${purple}`}>
       <Card.Body>
         <VStack align="stretch" gap={3}>
           <HStack justify="space-between">
-            <Heading size="md">{order.restaurantName}</Heading>
+            <Heading size="lg" color={`${yellow}`}>{order.restaurantName}</Heading>
             <Badge
               bg={getStatusStyle(order.status).bg}
               color={getStatusStyle(order.status).color}
@@ -81,7 +82,7 @@ export const OrderCard = ({ order, onCancelOrder }: OrderCardProps) => {
           <VStack align="stretch" gap={2}>
             {order.items.map((item, index) => (
               <HStack key={index} justify="space-between">
-                <Text color="black">
+                <Text color={`${yellow}`}>
                   {item.quantity}x {item.menuItemName}
                 </Text>
                 <Text fontWeight="medium" color={yellow}>
@@ -126,31 +127,24 @@ export const OrderCard = ({ order, onCancelOrder }: OrderCardProps) => {
 
           <HStack gap={2}>
             {showTracking && (
-              <Button
+              <NomButtons
                 onClick={() => setIsOpen(!isOpen)}
                 size="sm"
-                bg={purple}
-                color="white"
-                _hover={{ opacity: 0.8 }}
-                flex={1}
-              >
-                {isOpen ? "Hide Map" : "Track Order"}
-              </Button>
+               flex={1} 
+               title={isOpen ? "Hide Map" : "Track Order"} >
+              </NomButtons>
             )}
+           
             {canCancel && onCancelOrder && (
-              <Button
+              <NomButtons
                 onClick={() => onCancelOrder(order.id)}
+                colorScheme="outline"
                 size="sm"
-                bg={yellow}
-                color="black"
-                _hover={{ opacity: 0.8 }}
-                variant="outline"
-                borderColor={yellow}
                 flex={1}
-              >
-                Cancel Order
-              </Button>
-            )}
+               title="Cancel Order" >
+              </NomButtons>
+              
+            )} 
           </HStack>
 
           {showTracking && isOpen && (
