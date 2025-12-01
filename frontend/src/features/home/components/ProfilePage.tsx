@@ -341,7 +341,7 @@ export function ProfilePage() {
           </Box>
         </VStack>
       </Container>
-     <Footer />
+     
     </Box>
   );
 }
