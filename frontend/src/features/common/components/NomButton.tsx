@@ -47,7 +47,7 @@ export function NomButtons({
     },
     outline: {
       bg: "transparent",
-      color: "yellow",
+      color: yellow,
       hoverBg: `${yellow}20`,
       shadowColor: "rgba(69, 6, 147, 0.15)",
       borderColor: `${yellow}`,

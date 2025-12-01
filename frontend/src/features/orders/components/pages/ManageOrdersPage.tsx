@@ -105,9 +105,10 @@ export const ManageOrdersPage = () => {
     }
 
     return (
-      <VStack gap={4} align="stretch">
+      <VStack  gap={4} align="stretch">
         {ordersList.map((order) => (
           <RestaurantOrderCard
+          
             key={order.id}
             order={order}
             onAccept={handleAcceptOrder}
